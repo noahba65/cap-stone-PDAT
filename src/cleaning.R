@@ -17,19 +17,24 @@ daily_trips <- left_join(from_trips_daily, to_trips_daily,
     longitude = from_longitude,
     daily_from_trips = replace_na(daily_from_trips, 0),
     daily_to_trips = replace_na(daily_to_trips, 0),
-    net_trips = daily_from_trips - daily_to_trips
+    net_trips = daily_to_trips - daily_from_trips,
+    day = day(date),
+    month = month(date)
   ) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4269)
 
 
-rail_stops <- rail_stops %>%
+rail_stops_sf <- rail_stops %>%
   st_as_sf(coords = c("location.longitude", "location.latitude"), 
-           crs = 4326)
+           crs = 4269)
+
+daily_trips$distance_to_rail <- apply(st_distance(daily_trips, rail_stops_sf), 1, min)
 
 
 daily_trips_pop <-  st_join(daily_trips, cook_population, join = st_within) %>%
   select(-c(NAME, variable, GEOID)) %>%
   rename(Population = value)
+
 
 
 
@@ -43,5 +48,4 @@ weather.Panel <-
             Wind_Speed = max(sknt, na.rm = T))
 
 daily_trips_full <- left_join(daily_trips_pop, weather.Panel)
-head(daily_trips_full)
 

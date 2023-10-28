@@ -1,12 +1,16 @@
 
 # Construct URL
-divvy_url <- paste0(base_url,
-                    "$where=start_time >= '", start_date, 
-                    "' AND start_time < '", end_date, 
-                    "'&$order=", order_by, 
-                    "&$limit=", limit)
+divvy_url_full <- ifelse( is.null(limit),
+paste0(divvy_url,"$where=start_time >= '", start_date, 
+       "' AND start_time < '", end_date, 
+       "'&$order=", order_by),
+paste0(divvy_url,"$where=start_time >= '", start_date, 
+       "' AND start_time < '", end_date, 
+       "'&$order=", order_by, 
+       "&$limit=", limit)
+)
 
-divvy_df <- read.socrata(divvy_url)
+divvy_df <- read.socrata(divvy_url_full)
 
 
 
@@ -22,5 +26,5 @@ cook_population <- get_decennial(geography = "tract",
                                  geometry = TRUE)
 
 weather.Data <- 
-  riem_measures(station = "ORD", date_start = as.character(min(daily_trips$date)), date_end = as.character(max(daily_trips$date))) %>%
+  riem_measures(station = "ORD", date_start = start_date, date_end = end_date) %>%
   select(valid, tmpf, p01i, sknt) 
