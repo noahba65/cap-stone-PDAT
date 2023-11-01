@@ -4,6 +4,7 @@ library(tidycensus)
 library(tidyverse)
 library(sf)
 library(riem)
+library(lwgeom)
 
 
 # Define parameters

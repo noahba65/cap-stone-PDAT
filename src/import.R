@@ -1,6 +1,9 @@
 # Import Divvy Trips data
 divvy_df <- read_csv("/Users/noahanderson/Documents/Data/Divvy_Trips.csv")
 
+divvy_stations_url <- "https://data.cityofchicago.org/resource/bbyy-e7gq.json"
+divvy_stations <- read.socrata(divvy_stations_url)
+
 # Base URL for fetching rail stops data from the City of Chicago's database
 rail_stops_url <- "https://data.cityofchicago.org/resource/8pix-ypme.json"
 

@@ -13,18 +13,18 @@ divvy_df <- divvy_df %>%
     to_longitude = `TO LONGITUDE`
   )
 
-# Aggregate by start time and location to compute daily start trips
+# Aggregate by start time and location to compute hourly start trips
 from_trips_hourly <- divvy_df %>%
   group_by(date_from, from_station_id, from_latitude, from_longitude) %>%
   summarize(hourly_from_trips = n(), .groups = "drop")
 
-# Aggregate by stop time and location to compute daily stop trips
-to_trips_houlry <- divvy_df %>%
+# Aggregate by stop time and location to compute hourly stop trips
+to_trips_hourly <- divvy_df %>%
   group_by(date_to, to_station_id, to_latitude, to_longitude) %>%
   summarize(hourly_to_trips = n(), .groups = "drop")
 
 # Merge start and stop trips by time and location
-hourly_trips <- left_join(from_trips_hourly, to_trips_houlry, 
+hourly_trips <- left_join(from_trips_hourly, to_trips_hourly, 
                          by = c("date_from" = "date_to", 
                                 "from_station_id" = "to_station_id",
                                 "from_latitude" = "to_latitude",
@@ -45,7 +45,7 @@ hourly_trips <- left_join(from_trips_hourly, to_trips_houlry,
   st_as_sf(coords = c("longitude", "latitude"), crs = 4269)
 
 # Add lag terms and day and month columns
-houlry_trips <- hourly_trips %>%
+hourly_trips <- hourly_trips %>%
   mutate(lagHour_to = dplyr::lag(hourly_to_trips, 1),
            lag2Hours_to = dplyr::lag(hourly_to_trips, 2),
            lag3Hours_to = dplyr::lag(hourly_to_trips, 3),
@@ -70,11 +70,22 @@ rail_stops_sf <- rail_stops %>%
   st_as_sf(coords = c("location.longitude", "location.latitude"), 
            crs = 4269)
 
-# Calculate the distance to the nearest rail stop for each trip location
-daily_trips$distance_to_rail <- apply(st_distance(daily_trips, rail_stops_sf), 1, min)
+
+divvy_stations <- divvy_stations %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4269)
+
+# Compute distance to rail for each station.
+divvy_stations$distance_to_rail <- apply(st_distance(divvy_stations, rail_stops_sf), 1, min)
+
+# Join distance to rail column with hourly_trips to save computational time
+hourly_trips <- hourly_trips %>%
+  left_join(divvy_stations %>% select(id, distance_to_rail) %>% st_drop_geometry() %>% 
+              transmute(station_id = as.double(id), distance_to_rail))
+
+
 
 # Join the trips data with the population data using spatial join
-daily_trips_pop <-  st_join(daily_trips, cook_population, join = st_within) %>%
+hourly_trips_pop <-  st_join(hourly_trips, cook_population, join = st_within) %>%
   select(-c(NAME, variable, GEOID)) %>%
   rename(Population = value)
 
@@ -92,5 +103,5 @@ weather.Panel <-
   # Replace NA values with values from the previous hour
   fill(HighTemp, LowTemp, Percipitation, Wind_Speed, .direction = "down")
 
-daily_trips_full <- left_join(daily_trips_pop, weather.Panel)
+hourly_trips_full <- left_join(hourly_trips_pop, weather.Panel)
 
