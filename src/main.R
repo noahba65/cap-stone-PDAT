@@ -24,10 +24,7 @@ source("src/cleaning.R")
 use_virtualenv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/.venv", required = TRUE)
 
 
-py_run_string("print('Hello World')")
 # Source the Python script
-# Replace 'script.py' with the actual name of your Python script
 source_python("src/model.py")
 
-py_config()
 
