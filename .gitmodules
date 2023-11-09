@@ -1,0 +1,3 @@
+[submodule "src/StemGNN"]
+	path = src/StemGNN
+	url = https://github.com/microsoft/StemGNN.git

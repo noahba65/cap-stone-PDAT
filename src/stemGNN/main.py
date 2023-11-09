@@ -1,12 +1,4 @@
 import os
-
-import sys
-
-# Add the path to the 'models' directory to sys.path
-# It assumes that the current working directory is '/Users/noahanderson/Documents/GitHub/cap-stone-PDAT'
-sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'stemGNN'))
-
-
 import torch
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 from datetime import datetime
