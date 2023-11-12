@@ -1,26 +1,29 @@
-# Import Divvy Trips data
-divvy_df <- read_csv("/Users/noahanderson/Documents/Data/Divvy_Trips.csv")
+chicago_ca <- st_read("/Users/noahanderson/Documents/Data/Boundaries-Neighborhoods.geojson") %>%
+  st_transform(4269) %>%
+  filter(pri_neigh %in% target_ca) 
 
-divvy_stations_url <- "https://data.cityofchicago.org/resource/bbyy-e7gq.json"
-divvy_stations <- read.socrata(divvy_stations_url)
+divvy_stations_url <- "https://data.cityofchicago.org/resource/bk89-9dk7.json"
+divvy_stations <- read.socrata(divvy_stations_url) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4269)
 
-# Base URL for fetching rail stops data from the City of Chicago's database
-rail_stops_url <- "https://data.cityofchicago.org/resource/8pix-ypme.json"
+# Join data frames to identity stations in target community areas
+divvy_stations_in_ca <- st_join(chicago_ca, divvy_stations) 
 
-# Fetch rail stops data using the provided URL
-rail_stops <- read.socrata(rail_stops_url)
+# Define string for target station ID's
+ca_ids_string <- paste(divvy_stations_in_ca$id, collapse = ",")
 
-# Retrieve Cook County's 2010 decennial population data at the tract level
-# Using the 'tidycensus' package
-cook_population <- get_decennial(geography = "tract", 
-                                 variables = "P001001", 
-                                 year = 2010, 
-                                 state = "IL", 
-                                 county = "Cook County", 
-                                 geometry = TRUE)
+# Define the base URL for historical divvy time snapshots
+divvy_time_base_url <- "https://data.cityofchicago.org/resource/eq45-8inv.json"
 
-# Retrieve weather data for ORD station between given start and end dates
-# Filters specific columns (valid, tmpf, p01i, sknt) from the fetched data
-weather.Data <- 
-  riem_measures(station = "ORD", date_start = start_date, date_end = end_date) %>%
-  select(valid, tmpf, p01i, sknt)
+# Define the select, where, limit, and order parameters
+select_columns <- "$select=id,timestamp,docks_in_service,available_docks"
+id_filter <- paste0("id in (", ca_ids_string, ")")
+date_filter <- paste0("timestamp >= '", start_date, "' AND timestamp <= '", end_date, "'")
+combined_filter <- paste0("$where=", id_filter, " AND ", date_filter)
+order_parameter <- "$order=timestamp DESC"
+
+# Combine the base URL with the select, where, limit, and order parameters
+divvy_time_url <- paste0(divvy_time_base_url, "?", select_columns, "&", combined_filter, "&", order_parameter)
+
+# Read divvy data
+divvy_time_raw <- read.socrata(divvy_time_url)
