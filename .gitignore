@@ -3,3 +3,10 @@
 .RData
 .Ruserdata
 .venv
+.DS_Store
+*.DS_Store
+*.pt
+*.rtf
+src/StemGNN/.DS_Store
+src/StemGNN/output/.DS_Store
+src/.DS_Store
