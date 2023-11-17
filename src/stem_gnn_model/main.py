@@ -33,13 +33,21 @@ parser.add_argument('--leakyrelu_rate', type=int, default=0.2)
 args = parser.parse_args()
 print(f'Training configs: {args}')
 data_file = os.path.join('dataset', args.dataset + '.csv')
-result_train_file = os.path.join('output', args.dataset, 'train')
-result_test_file = os.path.join('output', args.dataset, 'test')
+
+# Convert window size and learning rate to strings for directory naming
+window_size_str = str(args.window_size)
+lr_str = "{:.1e}".format(args.lr)  # Formats the learning rate as a string in scientific notation
+
+result_train_file = os.path.join('output', args.dataset, 'train' + '_window_size_' + window_size_str + '_lr_' + lr_str)
+result_test_file = os.path.join('output', args.dataset, 'test' + '_window_size_' + window_size_str + '_lr_' + lr_str)
+
 if not os.path.exists(result_train_file):
     os.makedirs(result_train_file)
 if not os.path.exists(result_test_file):
     os.makedirs(result_test_file)
+
 data = pd.read_csv(data_file).values
+
 
 # split data
 train_ratio = args.train_length / (args.train_length + args.valid_length + args.test_length)
