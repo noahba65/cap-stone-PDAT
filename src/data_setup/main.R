@@ -12,10 +12,10 @@ end_date <- "2022-09-01"
 target_ca <- c( "Uptown", "North Center", "Lincoln Square")
 
 message("Importing data.")
-source("src/import.R")
+source("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/data_setup/import.R")
 
 message("Cleaning data.")
-source("src/cleaning.R")
+source("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/data_setup/cleaning.R")
 
 
 
