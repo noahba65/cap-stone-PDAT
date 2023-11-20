@@ -5,7 +5,7 @@ divvy_10_min_clean <- divvy_time_raw %>%
   distinct(timestamp, id, .keep_all = TRUE)
 
 # Pivot data to wide format
-divvy_10_min_wide <- divvy_time_clean %>%
+divvy_10_min_wide <- divvy_10_min_clean %>%
   pivot_wider(names_from = id, values_from = deficit) %>%
   select(-timestamp)
 
