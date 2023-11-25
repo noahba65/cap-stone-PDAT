@@ -33,25 +33,3 @@ colnames(divvy_10_min_wide) <- NULL
 write.csv(divvy_10_min_wide, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/dataset/divvy_10_min_wide.csv",
           row.names = FALSE, col.names = FALSE)
 
-
-# Select only hourly updates
-divvy_hour_clean <- divvy_10_min_clean %>% 
-  group_by(ID, hour = lubridate::hour(Timestamp)) %>%
-  filter(Timestamp == min(Timestamp)) %>%
-  ungroup() %>%
-  select(-hour)
-
-# Create hourly wide data set
-divvy_hour_wide <- divvy_hour_clean %>%
-  pivot_wider(names_from = ID, values_from = deficit) %>%
-  select(-Timestamp)
-
-# Remove column names
-colnames(divvy_hour_wide) <- NULL
-
-# Save csv to StemGNN sub repository
-write.csv(divvy_hour_wide, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/dataset/divvy_hour_wide.csv",
-          row.names = FALSE, col.names = FALSE)
-
-
-

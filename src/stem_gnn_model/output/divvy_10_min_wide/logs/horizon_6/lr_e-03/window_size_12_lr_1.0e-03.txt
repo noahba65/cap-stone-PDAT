@@ -1,0 +1,74 @@
+❯ python main.py --train True --evaluate True --dataset divvy_10_min_wide --window_size 12 --horizon 6 --norm_method z_score --epoch 15 --lr 1e-3
+Training configs: Namespace(batch_size=32, dataset='divvy_10_min_wide', decay_rate=0.5, device='cpu', dropout_rate=0.5, early_stop=False, epoch=15, evaluate=True, exponential_decay_step=5, horizon=6, leakyrelu_rate=0.2, lr=0.001, multi_layer=5, norm_method='z_score', optimizer='RMSProp', test_length=1, train=True, train_length=7, valid_length=2, validate_freq=1, window_size=12)
+Total Trainable Params: 1065229
+/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/models/base_model.py:49: UserWarning: The function torch.rfft is deprecated and will be removed in a future PyTorch release. Use the new torch.fft module functions, instead, by importing torch.fft and calling torch.fft.fft or torch.fft.rfft. (Triggered internally at  ../aten/src/ATen/native/SpectralOps.cpp:590.)
+  ffted = torch.rfft(input, 1, onesided=False)
+/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/models/base_model.py:58: UserWarning: The function torch.irfft is deprecated and will be removed in a future PyTorch release. Use the new torch.fft module functions, instead, by importing torch.fft and calling torch.fft.ifft or torch.fft.irfft. (Triggered internally at  ../aten/src/ATen/native/SpectralOps.cpp:602.)
+  iffted = torch.irfft(time_step_as_inner, 1, onesided=False)
+| end of epoch   0 | time: 41.56s | train_total_loss 0.2143
+------ validate on data: VALIDATE ------
+NORM: MAPE 80.065658896%; MAE 0.331675927; RMSE 0.443583902.
+RAW : MAPE 57.001123535%; MAE 1.336802954; RMSE 1.970202142.
+| end of epoch   1 | time: 44.99s | train_total_loss 0.1472
+------ validate on data: VALIDATE ------
+NORM: MAPE 60.779586917%; MAE 0.242914913; RMSE 0.365653001.
+RAW : MAPE 52.487114595%; MAE 0.971951423; RMSE 1.556293342.
+| end of epoch   2 | time: 46.96s | train_total_loss 0.1398
+------ validate on data: VALIDATE ------
+NORM: MAPE 59.902861763%; MAE 0.257362344; RMSE 0.373524758.
+RAW : MAPE 52.620934428%; MAE 1.031091062; RMSE 1.603263332.
+| end of epoch   3 | time: 47.16s | train_total_loss 0.1366
+------ validate on data: VALIDATE ------
+NORM: MAPE 56.509388778%; MAE 0.233453432; RMSE 0.357029650.
+RAW : MAPE 52.047983035%; MAE 0.933416985; RMSE 1.508080123.
+| end of epoch   4 | time: 47.36s | train_total_loss 0.1345
+------ validate on data: VALIDATE ------
+NORM: MAPE 63.242487639%; MAE 0.261475344; RMSE 0.384875508.
+RAW : MAPE 54.236810680%; MAE 1.039797591; RMSE 1.622178032.
+| end of epoch   5 | time: 46.70s | train_total_loss 0.1268
+------ validate on data: VALIDATE ------
+NORM: MAPE 56.178411544%; MAE 0.229495411; RMSE 0.352351996.
+RAW : MAPE 52.328038234%; MAE 0.914006523; RMSE 1.476171427.
+| end of epoch   6 | time: 46.19s | train_total_loss 0.1267
+------ validate on data: VALIDATE ------
+NORM: MAPE 55.183232562%; MAE 0.223930310; RMSE 0.350206688.
+RAW : MAPE 51.800603200%; MAE 0.892617164; RMSE 1.464794236.
+| end of epoch   7 | time: 46.00s | train_total_loss 0.1262
+------ validate on data: VALIDATE ------
+NORM: MAPE 57.936752381%; MAE 0.228528769; RMSE 0.351891780.
+RAW : MAPE 51.318969443%; MAE 0.907810429; RMSE 1.465395575.
+| end of epoch   8 | time: 45.72s | train_total_loss 0.1257
+------ validate on data: VALIDATE ------
+NORM: MAPE 54.898482781%; MAE 0.222438646; RMSE 0.349052032.
+RAW : MAPE 51.621842139%; MAE 0.885299921; RMSE 1.452391782.
+| end of epoch   9 | time: 48.12s | train_total_loss 0.1253
+------ validate on data: VALIDATE ------
+NORM: MAPE 61.332875685%; MAE 0.239087842; RMSE 0.358859144.
+RAW : MAPE 51.990316826%; MAE 0.946111109; RMSE 1.485121582.
+| end of epoch  10 | time: 46.03s | train_total_loss 0.1229
+------ validate on data: VALIDATE ------
+NORM: MAPE 54.523524994%; MAE 0.219239003; RMSE 0.346800039.
+RAW : MAPE 51.307191450%; MAE 0.870778034; RMSE 1.437764166.
+| end of epoch  11 | time: 45.83s | train_total_loss 0.1228
+------ validate on data: VALIDATE ------
+NORM: MAPE 54.965734578%; MAE 0.233335252; RMSE 0.351041601.
+RAW : MAPE 53.392022512%; MAE 0.927285214; RMSE 1.459976223.
+| end of epoch  12 | time: 45.85s | train_total_loss 0.1223
+------ validate on data: VALIDATE ------
+NORM: MAPE 55.221251428%; MAE 0.225148016; RMSE 0.347625138.
+RAW : MAPE 51.893812864%; MAE 0.894444475; RMSE 1.442337095.
+| end of epoch  13 | time: 46.19s | train_total_loss 0.1222
+------ validate on data: VALIDATE ------
+NORM: MAPE 55.216709755%; MAE 0.219651070; RMSE 0.346005051.
+RAW : MAPE 51.108012940%; MAE 0.871531724; RMSE 1.430445210.
+| end of epoch  14 | time: 46.48s | train_total_loss 0.1219
+------ validate on data: VALIDATE ------
+NORM: MAPE 54.578406316%; MAE 0.223568098; RMSE 0.346590050.
+RAW : MAPE 51.986211213%; MAE 0.886338728; RMSE 1.433223482.
+Training took 12.561862834294637 minutes
+NORM: MAPE 58.565285817%; MAE 0.218977886; RMSE 0.347639240.
+RAW : MAPE 51.565595376%; MAE 0.868113590; RMSE 1.431779961.
+Performance on test set: MAPE:  0.52 | MAE:  0.87 | RMSE: 1.4318
+Evaluation took 0.03612339893976847 minutes
+done
+    ~/Doc/G/
