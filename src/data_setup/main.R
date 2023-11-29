@@ -8,6 +8,8 @@ options(scipen = 999)
 # Define vector for community areas to be queried
 target_ca <- c( "Uptown", "North Center", "Lincoln Square")
 
+target_ca_expanded <- c(target_ca, "Lincoln Park", "Edgewater", "Logan Square", "Avondale")
+
 message("Importing data.")
 source("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/data_setup/import.R")
 
