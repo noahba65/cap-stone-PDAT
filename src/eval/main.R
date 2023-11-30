@@ -1,18 +1,11 @@
 library(tidyverse)
 library(stringr)
-library(here)
 
-source("src/eval/functions.R")
 
-set_here()
-# Set base directory
-base_dir <- "src/stem_gnn_model/output/divvy_10_min_wide/logs"
+source("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/functions.R")
 
-# Recursively list all log files
-log_files <- list.files(base_dir, pattern = "\\.txt$", full.names = TRUE, recursive = TRUE)
+base_dir_horizon_3 <- "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/output/divvy_10_min_wide/horizon_3_output/test"
+base_dir_horizon_6 <- "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/output/divvy_10_min_wide/horizon_6_output/test"
 
-# Apply function to all files and combine results
-metrics_df <- bind_rows(lapply(log_files, parse_log_file))
-
-write_csv(metrics_df, "src/eval/metrics/metrics_df.csv")
+source("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/metrics.R")
 
