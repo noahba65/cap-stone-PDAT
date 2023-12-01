@@ -1,0 +1,98 @@
+---
+title: "StemGNN for Divvy Bike Re-balancing"
+author: "Noah Anderson"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r echo=FALSE, message=FALSE, results='hide'}
+library(tidyverse)
+library(kableExtra)
+```
+# Introduction
+
+# Methods
+
+In this section, the methodology employed in forecasting bicycle shortages at various Divvy Stations in Chicago using a modified version of the StemGNN model originally developed by Microsoft (StemGNN repository, Microsoft, 2023) will be described. The dataset used for this study was sourced from the Chicago Data Portal (City of Chicago, 2023), covering the period from March to September 2022. This dataset provided comprehensive historical information regarding the status of Divvy stations, including the availability and total number of docks at each station, recorded at 10-minute intervals. To facilitate model tuning and exploratory analysis, a focus was placed on specific neighborhoods, namely Lake View, Lincoln Park, Uptown, and North Center, which collectively encompassed 49 bike stations. Unfortunately, data for 8 stations were unavailable due to a download error. However, the data from the remaining 41 stations was deemed sufficient for analysis. Subsequently, the data was reformatted into a T*N matrix, with 'T' representing time stamps and 'N' representing nodes. Each entry in this matrix reflected the bicycle deficit at a specific node and time.
+
+The StemGNN model, originally proposed by Cao et al. (2020), incorporates Discrete Fourier Transform (DFT) and Graph Fourier Transform (GFT) methodologies. DFT is employed to model temporal dependencies, enabling the identification of patterns such as seasonality and autocorrelation. On the other hand, GFT is utilized to analyze interseries correlations by examining spatial interactions between nodes.
+
+In this research, the focus was on fine-tuning two primary parameters of the StemGNN model: the learning rate and window size, while maintaining the default settings for other parameters. The learning rate influences the model's learning speed, and the window size specifies the quantity of past data points used for forecasting. Experiments were conducted with forecast horizons of 3 and 6 (equivalent to 30 and 60 minutes into the future), learning rates of 0.01, 0.001, and 0.0001, and window sizes of 6, 12, 24, and 30, resulting in a total of 24 distinct model configurations.
+
+Root Mean Square Error (RMSE) served as the primary evaluation metric to assess model performance. It is worth noting that RMSE can be calculated in various ways for a joint time series, as it effectively consists of different models, one for each node. In this study, RMSE for the entire output, encompassing both time and space, was computed as the chosen metric for evaluation. This approach provides a comprehensive measure of model performance across both temporal and spatial dimensions.
+
+# Results
+
+```{r echo=FALSE, message=FALSE, results='hide'}
+metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/metrics/metrics_df.csv")
+```
+
+## Optimal Model Configuration
+The superior performance for both 30-minute (horizon 3) and 60-minute (horizon 6) forecasts was observed with a learning rate of $10^{-3}$ and a window size of 12. This configuration yielded an RMSE of 0.796 docks for horizon 3 and 0.813 docks for horizon 6.
+
+## Impact of Tuning Parameters on Performance
+The study highlighted the pivotal role of learning rate as a critical tuning parameter. A learning rate of $10^{-2}$ was too rapid, leading to less accurate models, whereas $10^{-4}$, though slower, was effective with larger window sizes. The rate of $10^{-3}$ emerged as optimal across different window sizes, with its performance slightly diminishing beyond a window size of 12. These effects can be seen in Figures 1 and 2. Notably, smaller window sizes, which are quicker to train, proved as effective as larger ones, offering a balance between accuracy and efficiency. For full model results see Tables 1 and 2.
+```{r echo=FALSE, message=FALSE }
+kable(metrics_df %>% filter(Horizon == 3), caption = "Table 1: Detailed RMSE Results for the 30-Minute Forecast")
+kable(metrics_df %>% filter(Horizon == 6), caption = "Table 2: Detailed RMSE Results for the 60-Minute Forecast")
+
+```
+
+
+```{r echo=FALSE, message=FALSE}
+
+metrics_df %>%
+  filter(Horizon == 3) %>%
+  ggplot() +
+  geom_line(aes(x = WindowSize, y = RMSE, color = as.factor(LearningRate))) + 
+  ggtitle("30 Minute Forecast") + 
+  xlab("Window Size (10 Minute Intervals)") +
+  labs(
+    color = "Learning Rate",
+    caption = "Figure 1: RMSE across different window sizes for the 30-minute forecast.") +
+  scale_x_continuous(breaks = c(6, 12, 24, 30)) +   
+    scale_color_manual(
+    values = c("red", "purple", "orange"),  # You can specify colors here
+    labels = scales::scientific_format()(unique(metrics_df$LearningRate))
+  )
+```
+
+
+```{r echo=FALSE, message=FALSE}
+metrics_df %>%
+  filter(Horizon == 6) %>%
+  ggplot() +
+  geom_line(aes(x = WindowSize, y = RMSE, color = as.factor(LearningRate))) + 
+  ggtitle("60 Minute Forecast") + 
+  xlab("Window Size (10 Minute Intervals)") +
+  labs(color = "Learning Rate",
+       caption = "Figure 2: RMSE across different window sizes for the 60-minute forecast.") +
+  scale_x_continuous(breaks = c(6, 12, 24, 30)) + 
+    scale_x_continuous(breaks = c(6, 12, 24, 30)) +   
+    scale_color_manual(
+    values = c("red", "purple", "orange"),  # You can specify colors here
+    labels = scales::scientific_format()(unique(metrics_df$LearningRate))
+  )
+
+```
+
+
+
+
+# Discussion
+## Efficiency versus Accuracy
+When examining the learning rate of $10^{-3}$, the difference in RMSE between window sizes 6 and 12 was minimal (0.03 docks for horizon 3 and 0.004 docks for horizon 6). This indicates that the marginal improvement with a window size of 12 does not justify its longer training time. Consequently, satisfactory results can be attained with fewer resources, an important consideration for practical model deployment.
+
+
+# References
+
+> Microsoft. (2023). StemGNN: Spectral Temporal Graph Neural Network. GitHub. Retrieved from https://github.com/microsoft/StemGNN
+
+> Cao, D., Wang, Y., Duan, J., Zhang, C., Zhu, X., Huang, C., ... & Zhang, Q. (2020).  
+Spectral temporal graph neural network for multivariate time-series forecasting.  
+Advances in neural information processing systems, 33, 17766-17778.
+
+
+> City of Chicago. "Divvy Trips." Data published by City of Chicago. Accessed on November 27, 2023. Available at: <https://data.cityofchicago.org/Transportation/Divvy-Trips/fg6s-gzvg>.
+
+# Appendix
