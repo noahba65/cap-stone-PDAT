@@ -30,3 +30,5 @@ rmse_results_df_clean_horizon_6 <- rmse_results_df_horizon_6 %>%
 metrics_df <- rbind(rmse_results_df_clean_horizon_3, rmse_results_df_clean_horizon_6) %>%
   select(Horizon, LearningRate, WindowSize, RMSE) %>%
   arrange(Horizon, LearningRate, WindowSize)
+
+write_csv(metrics_df, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/metrics/metrics_df.csv")
