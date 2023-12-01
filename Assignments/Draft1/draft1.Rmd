@@ -10,6 +10,14 @@ library(tidyverse)
 library(kableExtra)
 ```
 # Introduction
+Divvy, a bike share program owned by the City of Chicago and in collaboration with Lyft, has seen a marked increase in usage since its inception in 2013. Notably, the majority of Divvy bikes are electric, necessitating a return to docking stations after each use. A prevalent issue with such bike-sharing systems is the potential imbalance at stations, often characterized by a higher number of departing trips than arriving ones at specific stations. To address this, Divvy has introduced a program called Bike Angels, which allows users to earn points for riding bikes from crowded stations to those that are running low on bikes. The idea is that users will decide to route their already planned trips and go a little further to find an empty station. 
+
+This research project is an exploratory analysis of a potential model that could be deployed to the Bike Angel problem and the problem of bike rebalancing in general. Divvy bike stations are present all around Chicago making up a network of nodes that have bikes coming in and bikes coming out. The key measure for these stations is the deficit, the amount of empty  These nodes (stations) all have spatial correlations with each other and temporal correlations with their past behaviors. These can be thought of as individual time series, one for each node, that change over time. The key 
+
+
+This project will take nodes (bike dock stations) and model them as joint-time series. 
+
+The StemGNN model is a machine learning algorithm developed by Microsoft. 
 
 # Methods
 

@@ -1,0 +1,54 @@
+❯ python main.py --train True --evaluate True --dataset divvy_10_min_wide_percent --window_size 18 --horizon 6 --norm_method z_score --epoch 15 --lr 1e-3
+Training configs: Namespace(batch_size=32, dataset='divvy_10_min_wide_percent', decay_rate=0.5, device='cpu', dropout_rate=0.5, early_stop=False, epoch=15, evaluate=True, exponential_decay_step=5, horizon=6, leakyrelu_rate=0.2, lr=0.001, multi_layer=5, norm_method='z_score', optimizer='RMSProp', test_length=1, train=True, train_length=7, valid_length=2, validate_freq=1, window_size=18)
+Total Trainable Params: 2384419
+/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/models/base_model.py:49: UserWarning: The function torch.rfft is deprecated and will be removed in a future PyTorch release. Use the new torch.fft module functions, instead, by importing torch.fft and calling torch.fft.fft or torch.fft.rfft. (Triggered internally at  ../aten/src/ATen/native/SpectralOps.cpp:590.)
+  ffted = torch.rfft(input, 1, onesided=False)
+/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/models/base_model.py:58: UserWarning: The function torch.irfft is deprecated and will be removed in a future PyTorch release. Use the new torch.fft module functions, instead, by importing torch.fft and calling torch.fft.ifft or torch.fft.irfft. (Triggered internally at  ../aten/src/ATen/native/SpectralOps.cpp:602.)
+  iffted = torch.irfft(time_step_as_inner, 1, onesided=False)
+| end of epoch   0 | time: 88.15s | train_total_loss 0.2200
+------ validate on data: VALIDATE ------
+NORM: MAPE 83.589598374%; MAE 0.385000925; RMSE 0.491131882.
+RAW : MAPE 71.921366375%; MAE 9.940922529; RMSE 12.817226683.
+| end of epoch   1 | time: 99.50s | train_total_loss 0.1559
+------ validate on data: VALIDATE ------
+NORM: MAPE 62.087851210%; MAE 0.285111598; RMSE 0.387718865.
+RAW : MAPE 61.995167001%; MAE 7.331504018; RMSE 10.048412591.
+| end of epoch   2 | time: 99.53s | train_total_loss 0.1432
+------ validate on data: VALIDATE ------
+NORM: MAPE 61.727162751%; MAE 0.281002592; RMSE 0.384117841.
+RAW : MAPE 61.702440962%; MAE 7.218632716; RMSE 9.940855546.
+| end of epoch   3 | time: 97.49s | train_total_loss 0.1405
+------ validate on data: VALIDATE ------
+NORM: MAPE 70.161258879%; MAE 0.288230005; RMSE 0.395937702.
+RAW : MAPE 53.583046034%; MAE 7.377428356; RMSE 10.163778873.
+| end of epoch   4 | time: 94.47s | train_total_loss 0.1373
+------ validate on data: VALIDATE ------
+NORM: MAPE 61.835839929%; MAE 0.243093867; RMSE 0.358417256.
+RAW : MAPE 53.188683981%; MAE 6.268087612; RMSE 9.323741244.
+| end of epoch   5 | time: 91.05s | train_total_loss 0.1263
+------ validate on data: VALIDATE ------
+NORM: MAPE 56.908710359%; MAE 0.220953890; RMSE 0.340344648.
+RAW : MAPE 51.661293050%; MAE 5.685537113; RMSE 8.834448667.
+| end of epoch   6 | time: 91.06s | train_total_loss 0.1263
+------ validate on data: VALIDATE ------
+NORM: MAPE 57.430566874%; MAE 0.215777013; RMSE 0.339883551.
+RAW : MAPE 51.333064220%; MAE 5.556343275; RMSE 8.834259331.
+| end of epoch   7 | time: 89.76s | train_total_loss 0.1255
+------ validate on data: VALIDATE ------
+NORM: MAPE 55.922244219%; MAE 0.218422276; RMSE 0.339347602.
+RAW : MAPE 51.448499828%; MAE 5.612725801; RMSE 8.792902145.
+| end of epoch   8 | time: 89.57s | train_total_loss 0.1242
+------ validate on data: VALIDATE ------
+NORM: MAPE 59.756579722%; MAE 0.230338008; RMSE 0.345352345.
+RAW : MAPE 53.335332242%; MAE 5.939594056; RMSE 8.986198379.
+| end of epoch   9 | time: 89.71s | train_total_loss 0.1238
+------ validate on data: VALIDATE ------
+NORM: MAPE 58.549286202%; MAE 0.231051044; RMSE 0.342824085.
+RAW : MAPE 51.888126812%; MAE 5.947790350; RMSE 8.897200366.
+^C---------------------------------------------------------------------------------------------------
+Exiting from training early
+NORM: MAPE 60.288697280%; MAE 0.217113166; RMSE 0.347594599.
+RAW : MAPE 51.431720520%; MAE 5.597248834; RMSE 9.062633447.
+Performance on test set: MAPE:  0.51 | MAE:  5.60 | RMSE: 9.0626
+Evaluation took 0.06341660022735596 minutes
+done

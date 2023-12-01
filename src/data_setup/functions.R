@@ -11,7 +11,7 @@ save_csv <- function(data, file_path, OVERRIDE = FALSE) {
     }
   } else {
     # File does not exist, write the file
-    write_csv(data, file_path, row.names = FALSE, col.names = FALSE)
+    write_csv(data, file_path, row_names = FALSE, col_names = FALSE)
     message("File saved at: ", file_path)
   }
 }

@@ -37,9 +37,10 @@ data_file = os.path.join('dataset', args.dataset + '.csv')
 # Convert window size and learning rate to strings for directory naming
 window_size_str = str(args.window_size)
 lr_str = "{:.1e}".format(args.lr)  # Formats the learning rate as a string in scientific notation
+horizon_str = str(args.horizon)
 
-result_train_file = os.path.join('output', args.dataset, 'train' + '_window_size_' + window_size_str + '_lr_' + lr_str)
-result_test_file = os.path.join('output', args.dataset, 'test' + '_window_size_' + window_size_str + '_lr_' + lr_str)
+result_train_file = os.path.join('output', args.dataset, 'train' + '_horizon_' + horizon_str + '_window_size_' + window_size_str + '_lr_' + lr_str)
+result_test_file = os.path.join('output', args.dataset, 'test' + '_horizon_' + horizon_str + '_window_size_' + window_size_str + '_lr_' + lr_str)
 
 if not os.path.exists(result_train_file):
     os.makedirs(result_train_file)

@@ -5,5 +5,3 @@ divvy_stations_raw <- read.socrata(divvy_stations_url)
 
 
 divvy_raw <- read_csv("/Users/noahanderson/Documents/Data/Divvy_Bicycle_Stations_-_Historical.csv")
-
-divvy_raw_expanded<- read_csv("/Users/noahanderson/Documents/Data/Divvy_Bicycle_Stations_-_Historical_full.csv")
