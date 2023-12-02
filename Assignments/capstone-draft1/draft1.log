@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.30)  1 DEC 2023 13:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.30)  2 DEC 2023 06:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -542,28 +542,22 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 LaTeX Font Info:    Trying to load font information for U+msb on input line 89.
 (/Users/noahanderson/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 148.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 148.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 148.
-[1
+) [1
 
-{/Users/noahanderson/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
-<draft1_files/figure-latex/unnamed-chunk-4-1.pdf, id=57, 453.695pt x 315.1775pt>
+{/Users/noahanderson/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 202.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 202.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 202.
+[2{/Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
+<draft1_files/figure-latex/unnamed-chunk-4-1.pdf, id=54, 459.7175pt x 315.1775pt>
 File: draft1_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf)
 <use draft1_files/figure-latex/unnamed-chunk-4-1.pdf>
-Package pdftex.def Info: draft1_files/figure-latex/unnamed-chunk-4-1.pdf  used on input line 236.
-(pdftex.def)             Requested size: 453.6939pt x 315.17673pt.
-[2]
-<draft1_files/figure-latex/unnamed-chunk-5-1.pdf, id=64, 453.695pt x 315.1775pt>
-File: draft1_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
-<use draft1_files/figure-latex/unnamed-chunk-5-1.pdf>
-Package pdftex.def Info: draft1_files/figure-latex/unnamed-chunk-5-1.pdf  used on input line 238.
-(pdftex.def)             Requested size: 453.6939pt x 315.17673pt.
-[3 <./draft1_files/figure-latex/unnamed-chunk-4-1.pdf> <./draft1_files/figure-latex/unnamed-chunk-5-1.pdf>] [4] (./draft1.aux)
+Package pdftex.def Info: draft1_files/figure-latex/unnamed-chunk-4-1.pdf  used on input line 244.
+(pdftex.def)             Requested size: 459.74442pt x 315.19595pt.
+[3 <./draft1_files/figure-latex/unnamed-chunk-4-1.pdf>] [4] (./draft1.aux)
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-08-29>
@@ -572,21 +566,21 @@ L3 programming layer <2023-08-29>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `draft1.out' has not changed.
-(rerunfilecheck)             Checksum: C6837D48905F9288EEB46B43EDE8E7A7;1198.
+(rerunfilecheck)             Checksum: 6D78E817007400522759ADB3D18C2DBB;717.
  ) 
 Here is how much of TeX's memory you used:
- 12394 strings out of 476894
- 191852 string characters out of 5807780
+ 12379 strings out of 476894
+ 191257 string characters out of 5807780
  1933791 words of memory out of 5000000
- 33436 multiletter control sequences out of 15000+600000
+ 33425 multiletter control sequences out of 15000+600000
  601228 words of font info for 75 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,9n,79p,321b,437s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,9n,79p,311b,496s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/noahanderson/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-Output written on draft1.pdf (4 pages, 151490 bytes).
+Output written on draft1.pdf (4 pages, 146563 bytes).
 PDF statistics:
- 133 PDF objects out of 1000 (max. 8388607)
- 106 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
- 83 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 113 PDF objects out of 1000 (max. 8388607)
+ 90 compressed objects within 1 object stream
+ 21 named destinations out of 1000 (max. 500000)
+ 62 words of extra memory for PDF output out of 10000 (max. 10000000)
 

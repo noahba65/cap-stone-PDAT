@@ -12,7 +12,7 @@ library(kableExtra)
 # Introduction
 Divvy, Chicago's city-owned bike share program in collaboration with Lyft, has experienced significant growth since 2013. A key challenge is the imbalance in bike station capacities, with some stations frequently running empty while others overflow. To address this, Divvy employs Bike Angels, a program incentivizing users to help rebalance bikes by riding from crowded stations to those low on bikes. Despite this initiative, the dynamic nature of station statuses, especially during peak hours, highlights the need for predictive modeling.
 
-Previous studies using regression techniques and decision trees incorporated factors like weather and past station data but achieved limited success. This paper explores the StemGNN model, a machine learning algorithm designed for complex network systems. Each Divvy station is treated as a network node, focusing on the percentage of occupied docks. StemGNN, proven in traffic forecasting, relies solely on past node data, providing a unique perspective for Divvy's rebalancing challenge.
+Previous studies using regression techniques and decision trees incorporated factors like weather and past station data but achieved limited success (Krumlinde 2019). This paper explores the StemGNN model, a machine learning algorithm designed for complex network systems. Each Divvy station is treated as a network node, focusing on the percentage of occupied docks. StemGNN, proven in traffic forecasting, relies solely on past node data, providing a unique perspective for Divvy's rebalancing challenge.
 
 This study applies StemGNN, validated in traffic prediction, to Divvy's rebalancing problem (Cao et. al 2020). Leveraging the historical data of dock occupancy, the model forecasts bike availability, potentially enhancing operational efficiency. The methods section details the adaptation of StemGNN to Divvy's data, encompassing a specific period and various neighborhoods in Chicago. The results section presents the model's performance, emphasizing how different parameters affect forecasting accuracy. This paper aims to illustrate the potential of StemGNN in urban bike-sharing systems, offering insights for future advancements in predictive modeling for urban mobility.
  
@@ -41,7 +41,7 @@ kable( percent_metrics_df %>% filter(LearningRate == .001) %>% select(-LearningR
 kable( percent_metrics_df %>% filter(WindowSize == 6, Horizon == 3) %>% select(-Horizon, -WindowSize), caption = "Table 2: Metrics by learning rate (Horizon 3, Window Size 6")
 ```
 
-Learning rate proved far more sensitive of a tuning parameter as evidenced by Figure 1 which plots RMSE by the exponents of learning rates on a base 10 scale. From this we can see $10^{-4}$ proves too slow and $10^{-2}$ proves too fast with a learning rate of $10^{-3}$ proving to yield optimal results. The interaction with learning rate and window size is discussed in Appendix Section [BLANK] with data from models on slightly different data. 
+Learning rate proved far more sensitive of a tuning parameter as evidenced by Figure 1 which plots RMSE by the exponents of learning rates on a base 10 scale. From this we can see $10^{-4}$ proves too slow and $10^{-2}$ proves too fast with a learning rate of $10^{-3}$ proving to yield optimal results.
 
 ```{r echo=FALSE, message=FALSE }
 percent_metrics_df %>%
@@ -55,10 +55,30 @@ percent_metrics_df %>%
 ```
 
 ## Most Optimal Model
-The most optimal models, balancing efficiency and accuracy, used a learning rate of $10^{-3}$ and a window size of 6 for both 30 minute and 60 minute forecasts. This resulted in a RMSE of 5.09% and 5.04% for each model respectively. These are very optimistic results since it implies that dock availability percentage can be predicted with approximately 5% accuracy. This does not consider though the variability of the data, so RMSE was calculated as well normalizing by the standard deviation of the test data. These yield less optimistic results but still imply reasonable accuracy with results of 21.4% and 21.2% of the test datas standard deviation for horizons 3 and 6. Future studies on the StemGNN model for Divvy forecasting should focus on comparing these results with a baseline model. 
+The most optimal models, balancing efficiency and accuracy, used a learning rate of $10^{-3}$ and a window size of 6 for both 30 minute and 60 minute forecasts. This resulted in a RMSE of 5.09% and 5.04% for each model respectively. These are very optimistic results since it implies that dock availability percentage can be predicted with approximately 5% accuracy. This does not consider though the variability of the data, so RMSE was calculated as well normalizing by the standard deviation of the test data. These yield less optimistic results but still imply reasonable accuracy with results of 21.4% and 21.2% of the test datas standard deviation for horizons 3 and 6.  
 
 # Discussion
+The results found in this study are promising showcasing the power of StemGNN for geospatial joint time series. With the continuing growth of bike share programs more accurate rebalancing models will continue to be an important field of study cutting down on the potential cost and improving the reliability of available bikes for commuters. The results were not directly comparable to the project done by Krumlinde (2019) since different predictors were used (trips from in Krumlinde's case and percent full in this study). Another model that was in the development phase is also underway for Divvy that relies on a Poisson model. This is being developed by The Data Science For Social Good (DSSG) foundation which has proven its success with the Capital Hill Bike Share program in Washington D.C. (Henderson and Fishman 2013). 
 
+## Limitiations
+Both the Poisson model by DSSG and the model by Krumlinde either dealt with or plan to deal with Divvy data focusing around the Loop, the business district of Chicago. This study merely focused on four dense and populous residential neighborhoods each with their own unique restaurant and entertainment scenes. These neighborhoods were chosen due to largely not being accessible to one another by the CTA trains making Divvy bikes an optimal method of travel between neighborhoods. The idea was that these neighborhoods would be less complex than the Loop and serve as a good testing grounds for the viability of this model since they contain far less data points. 
+
+## Future Steps
+The next step for this model could include exploring some other tuning parameters such as Leaky Relu rate. Next adapting the code from Krumlinde and the DSSG for the percentage full data would help compare the StemGNN performance to other possible models. 
+
+The ultimate test will be to check its viability for the Loop which has the most Divvy activity and suffers from the worst balancing problems. It is the hope that this study will provide some working knowledge of optimal tuning parameters. There is no guarantee that the same parameters for the subsection examined in this project will be optimal for more complex networks, but it can at least serve as a starting point for model tuning. 
+
+# Appendix
+
+## Data Setup
+
+### Data Acquisition
+
+### Data Cleaning
+
+## Data Modeling
+
+## Data Evaluation
 
 # References
 
@@ -70,42 +90,16 @@ Advances in neural information processing systems, 33, 17766-17778.
 
 > City of Chicago. "Divvy Trips." Data published by City of Chicago. Accessed on November 27, 2023. Available at: <https://data.cityofchicago.org/Transportation/Divvy-Trips/fg6s-gzvg>.
 
-# Appendix 
+
+> Krumlinde, Z. (2019, July 22). Using Machine Learning to Predict Hourly Divvy Bike-Sharing Checkouts per Station. Towards Data Science. https://towardsdatascience.com/predicting-hourly-divvy-bike-sharing-checkouts-per-station-65b1d217d8a4
 
 
-## Section [BLANK] Tuning from Prior Models 
-
-```{r echo=FALSE, message=FALSE, results='hide'}
-deficit_metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
-```
-
-Initial iterations of this study employed a "bike deficit" metric, calculated as the difference between the number of empty docks and the total docks at each station. Subsequently, it was identified that this metric was not only derived incorrectly but also did not optimally represent station occupancy. The study then shifted to utilizing the Divvy data's percentage full metric for each station. Despite this correction, the preliminary models using the "bike deficit" provided valuable insights, particularly regarding the tuning of the learning rate.
-
-These early models underscored the significance of the learning rate as a crucial tuning parameter. A learning rate of $10^{-2}$ proved excessively rapid, compromising model accuracy, while a rate of $10^{-4}$, though slower, was more effective with larger window sizes. The learning rate of $10^{-3}$ was found to be optimal across various window sizes, despite a slight decrease in performance beyond a window size of 12, as illustrated in Figure 3. These findings were instrumental in selecting a learning rate of $10^{-3}$ for the subsequent percentage-based models.
-```{r echo=FALSE, message=FALSE }
-kable(metrics_df %>% filter(Horizon == 3), caption = "Table 3: Detailed RMSE Results for the 30-Minute Forecast")
-kable(metrics_df %>% filter(Horizon == 6), caption = "Table 4: Detailed RMSE Results for the 60-Minute Forecast")
-
-```
+> Henderson, J., & Fishman, A. (2013, August 9). Divvy: Helping Chicago’s New Bike Share Find Its Balance. Data Science For Social Good. https://www.dssgfellowship.org/2013/08/09/divvy-helping-chicagos-new-bike-share-find-its-balance/
 
 
-```{r echo=FALSE, message=FALSE}
 
-metrics_df %>%
-  filter(Horizon == 3) %>%
-  ggplot() +
-  geom_line(aes(x = WindowSize, y = RMSE, color = as.factor(LearningRate))) + 
-  ggtitle("Bike Deficit Model") + 
-  xlab("Window Size (10 Minute Intervals)") +
-  labs(
-    color = "Learning Rate",
-    caption = "Figure 3: RMSE across different window sizes for the 30-minute forecast.") +
-  scale_x_continuous(breaks = c(6, 12, 24, 30)) +   
-    scale_color_manual(
-    values = c("red", "purple", "orange"),  # You can specify colors here
-    labels = scales::scientific_format()(unique(metrics_df$LearningRate))
-  )
-```
+
+
 
 
 
