@@ -45,5 +45,6 @@ calculate_rmse <- function(data_list, dir_name) {
 extract_info <- function(dir_name) {
   window_size <- as.numeric(str_extract(dir_name, "(?<=window_size_)[0-9]+"))
   horizon <- as.numeric(str_extract(dir_name, "(?<=horizon_)[0-9]+"))
-  return(c(WindowSize = window_size, Horizon = horizon))
+  learning_rate <- as.numeric(str_extract(dir_name, "(?<=lr_)[0-9\\.e-]+"))
+  return(c(WindowSize = window_size, Horizon = horizon, LearningRate = learning_rate))
 }
