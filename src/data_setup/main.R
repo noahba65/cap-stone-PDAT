@@ -7,6 +7,7 @@ options(scipen = 999)
 
 # Define vector for community areas to be queried
 target_ca <- c( "Uptown", "North Center", "Lincoln Square")
+target_ca_small <- c("Uptown")
 
 
 message("Importing data.")
