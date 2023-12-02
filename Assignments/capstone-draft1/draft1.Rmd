@@ -1,0 +1,111 @@
+---
+title: "StemGNN for Divvy Bike Re-balancing"
+author: "Noah Anderson"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r echo=FALSE, message=FALSE, results='hide'}
+library(tidyverse)
+library(kableExtra)
+```
+# Introduction
+Divvy, Chicago's city-owned bike share program in collaboration with Lyft, has experienced significant growth since 2013. A key challenge is the imbalance in bike station capacities, with some stations frequently running empty while others overflow. To address this, Divvy employs Bike Angels, a program incentivizing users to help rebalance bikes by riding from crowded stations to those low on bikes. Despite this initiative, the dynamic nature of station statuses, especially during peak hours, highlights the need for predictive modeling.
+
+Previous studies using regression techniques and decision trees incorporated factors like weather and past station data but achieved limited success. This paper explores the StemGNN model, a machine learning algorithm designed for complex network systems. Each Divvy station is treated as a network node, focusing on the percentage of occupied docks. StemGNN, proven in traffic forecasting, relies solely on past node data, providing a unique perspective for Divvy's rebalancing challenge.
+
+This study applies StemGNN, validated in traffic prediction, to Divvy's rebalancing problem (Cao et. al 2020). Leveraging the historical data of dock occupancy, the model forecasts bike availability, potentially enhancing operational efficiency. The methods section details the adaptation of StemGNN to Divvy's data, encompassing a specific period and various neighborhoods in Chicago. The results section presents the model's performance, emphasizing how different parameters affect forecasting accuracy. This paper aims to illustrate the potential of StemGNN in urban bike-sharing systems, offering insights for future advancements in predictive modeling for urban mobility.
+ 
+# Methods
+
+In this section, the methodology employed in forecasting bicycle shortages at various Divvy Stations in Chicago using a modified version of the StemGNN model in python originally developed by Microsoft (StemGNN repository, Microsoft, 2023) will be described. The dataset used for this study was sourced from the Chicago Data Portal (City of Chicago, 2023), covering the period from March to September 2022. This dataset provided comprehensive historical information regarding the status of Divvy stations, including the availability and total number of docks at each station, recorded at 10-minute intervals. To facilitate model tuning and exploratory analysis, a focus was placed on specific neighborhoods, namely Uptown, North Center, Lincoln Square, which collectively encompassed 41 bike stations.  Subsequently, the data was reformatted in R to form a T*N matrix, with 'T' representing time stamps and 'N' representing nodes. Each entry in this matrix reflected the percentage of docks in use being the predictor. 
+
+The StemGNN model, originally proposed by Cao et al. (2020), incorporates Discrete Fourier Transform (DFT) and Graph Fourier Transform (GFT) methodologies. DFT is employed to model temporal dependencies, enabling the identification of patterns such as seasonality and autocorrelation. On the other hand, GFT is utilized to analyze interseries correlations by examining spatial interactions between nodes.
+
+In this research, the focus was on fine-tuning two primary parameters of the StemGNN model: the learning rate and window size, while maintaining the default settings for other parameters. The learning rate influences the model's learning speed, and the window size specifies the quantity of past data points used for forecasting. Experiments were conducted with forecast horizons of 3 and 6 (equivalent to 30 and 60 minutes into the future), learning rates of 0.01, 0.001, and 0.0001, and window sizes of 6, 12, 18, were considered. All three learning rates were only run across window size 6 in the interest of time since the run time increases roughly in proportion to the increase in window size.
+
+Root Mean Square Error (RMSE) served as the primary evaluation metric to assess model performance. It is worth noting that RMSE can be calculated in various ways for a joint time series, as it effectively consists of different models, one for each node. In this study, RMSE for the entire output, encompassing both time and space, was computed as the chosen metric for evaluation. This approach provides a comprehensive measure of model performance across both temporal and spatial dimensions. In order to assess the model performance in context with the variability of the data, RMSE normalized by the standard deviation of the test data was also included. 
+
+# Results
+This section presents the findings from the analysis focused on tuning the StemGNN model for forecasting bicycle dock availability at Divvy stations in Chicago. The objective was to ascertain the most effective model parameters, specifically window size and learning rate, for accurate predictions of dock availability. The impact of these parameters on the model's performance was thoroughly evaluated, leading to the identification of configurations that strike a balance between efficiency and precision. The insights gained here illuminate the complexities of model tuning and pave the way for future predictive modeling in urban mobility scenarios.
+```{r echo=FALSE, message=FALSE, results='hide'}
+percent_metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
+```
+
+## Model Tuning 
+The window size proved to be unimportant for model accuracy with a spread in normalized RMSE of only .002 for horizon 3 and .008 for horizon 6. As shown in Table 1, for horizon 3, a window size of 12 proved most accurate and for horizon 6, a window size of 6 performed best. The negligible improvement in performance for window size 12 for horizon 3 does not justify the fact that it doubled the run time. The key take away is that the smallest possible window size yields reasonable accuracy that either beat or closley rival models that consider more past data points.   
+
+```{r echo=FALSE, message=FALSE }
+kable( percent_metrics_df %>% filter(LearningRate == .001) %>% select(-LearningRate), caption = "Table 1: Model results by window size (Learning Rate .001)")
+
+kable( percent_metrics_df %>% filter(WindowSize == 6, Horizon == 3) %>% select(-Horizon, -WindowSize), caption = "Table 2: Metrics by learning rate (Horizon 3, Window Size 6")
+```
+
+Learning rate proved far more sensitive of a tuning parameter as evidenced by Figure 1 which plots RMSE by the exponents of learning rates on a base 10 scale. From this we can see $10^{-4}$ proves too slow and $10^{-2}$ proves too fast with a learning rate of $10^{-3}$ proving to yield optimal results. The interaction with learning rate and window size is discussed in Appendix Section [BLANK] with data from models on slightly different data. 
+
+```{r echo=FALSE, message=FALSE }
+percent_metrics_df %>%
+  filter(Horizon == 3, WindowSize == 6) %>%
+  ggplot() +
+  geom_line(aes(x = log10(LearningRate), y = RMSE)) +
+  scale_x_continuous(breaks = c(-4, -3, -2)) +
+  ggtitle("Tuning Learning Rate") + 
+  xlab("Learning Rate (Log Base 10)") + 
+  labs(caption = "Figure 1: RMSE across different learning rates for the 30-minute forecast.")
+```
+
+## Most Optimal Model
+The most optimal models, balancing efficiency and accuracy, used a learning rate of $10^{-3}$ and a window size of 6 for both 30 minute and 60 minute forecasts. This resulted in a RMSE of 5.09% and 5.04% for each model respectively. These are very optimistic results since it implies that dock availability percentage can be predicted with approximately 5% accuracy. This does not consider though the variability of the data, so RMSE was calculated as well normalizing by the standard deviation of the test data. These yield less optimistic results but still imply reasonable accuracy with results of 21.4% and 21.2% of the test datas standard deviation for horizons 3 and 6. Future studies on the StemGNN model for Divvy forecasting should focus on comparing these results with a baseline model. 
+
+# Discussion
+
+
+# References
+
+> Microsoft. (2023). StemGNN: Spectral Temporal Graph Neural Network. GitHub. Retrieved from https://github.com/microsoft/StemGNN
+
+> Cao, D., Wang, Y., Duan, J., Zhang, C., Zhu, X., Huang, C., ... & Zhang, Q. (2020).  
+Spectral temporal graph neural network for multivariate time-series forecasting.  
+Advances in neural information processing systems, 33, 17766-17778.
+
+> City of Chicago. "Divvy Trips." Data published by City of Chicago. Accessed on November 27, 2023. Available at: <https://data.cityofchicago.org/Transportation/Divvy-Trips/fg6s-gzvg>.
+
+# Appendix 
+
+
+## Section [BLANK] Tuning from Prior Models 
+
+```{r echo=FALSE, message=FALSE, results='hide'}
+deficit_metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
+```
+
+Initial iterations of this study employed a "bike deficit" metric, calculated as the difference between the number of empty docks and the total docks at each station. Subsequently, it was identified that this metric was not only derived incorrectly but also did not optimally represent station occupancy. The study then shifted to utilizing the Divvy data's percentage full metric for each station. Despite this correction, the preliminary models using the "bike deficit" provided valuable insights, particularly regarding the tuning of the learning rate.
+
+These early models underscored the significance of the learning rate as a crucial tuning parameter. A learning rate of $10^{-2}$ proved excessively rapid, compromising model accuracy, while a rate of $10^{-4}$, though slower, was more effective with larger window sizes. The learning rate of $10^{-3}$ was found to be optimal across various window sizes, despite a slight decrease in performance beyond a window size of 12, as illustrated in Figure 3. These findings were instrumental in selecting a learning rate of $10^{-3}$ for the subsequent percentage-based models.
+```{r echo=FALSE, message=FALSE }
+kable(metrics_df %>% filter(Horizon == 3), caption = "Table 3: Detailed RMSE Results for the 30-Minute Forecast")
+kable(metrics_df %>% filter(Horizon == 6), caption = "Table 4: Detailed RMSE Results for the 60-Minute Forecast")
+
+```
+
+
+```{r echo=FALSE, message=FALSE}
+
+metrics_df %>%
+  filter(Horizon == 3) %>%
+  ggplot() +
+  geom_line(aes(x = WindowSize, y = RMSE, color = as.factor(LearningRate))) + 
+  ggtitle("Bike Deficit Model") + 
+  xlab("Window Size (10 Minute Intervals)") +
+  labs(
+    color = "Learning Rate",
+    caption = "Figure 3: RMSE across different window sizes for the 30-minute forecast.") +
+  scale_x_continuous(breaks = c(6, 12, 24, 30)) +   
+    scale_color_manual(
+    values = c("red", "purple", "orange"),  # You can specify colors here
+    labels = scales::scientific_format()(unique(metrics_df$LearningRate))
+  )
+```
+
+
+
