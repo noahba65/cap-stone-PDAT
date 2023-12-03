@@ -2,40 +2,49 @@
 title: "StemGNN for Divvy Bike Re-balancing"
 author: "Noah Anderson"
 output: pdf_document
+abstrac: "This study applies the StemGNN model, originally developed for traffic forecasting, to the challenge of bike rebalancing in Chicago's Divvy bike-share program. Utilizing data from the Chicago Data Portal, the research focuses on forecasting dock availability at various stations. The model treats each station as a node within a network, analyzing spatial and temporal correlations. Optimal model configurations were determined through fine-tuning learning rates and window sizes. The most effective model, with a learning rate of $10^{-3}$ and a window size of 6, achieved RMSEs of 5.09% and 5.04% for 30 and 60-minute forecasts, respectively. When normalized by the standard deviation of the test data, the results were 21.4% and 21.2%, indicating the model's potential in urban bike-sharing systems for predictive modeling and urban mobility management."
 ---
+
 ```{r echo=FALSE, message=FALSE, results='hide'}
 library(tidyverse)
 library(kableExtra)
 ```
+
 # Introduction
+
 Divvy, Chicago's city-owned bike share program in collaboration with Lyft, has experienced significant growth since 2013. A key challenge is the imbalance in bike station capacities, with some stations frequently running empty while others overflow. To address this, Divvy employs Bike Angels, a program incentivizing users to help rebalance bikes by riding from crowded stations to those low on bikes. Despite this initiative, the dynamic nature of station statuses, especially during peak hours, highlights the need for predictive modeling.
 
 Previous studies using regression techniques and decision trees incorporated factors like weather and past station data but achieved limited success (Krumlinde 2019). This paper explores the StemGNN model, a machine learning algorithm designed for complex network systems. Each Divvy station is treated as a network node, focusing on the percentage of occupied docks. StemGNN, proven in traffic forecasting, relies solely on past node data, providing a unique perspective for Divvy's rebalancing challenge.
 
 This study applies StemGNN, validated in traffic prediction, to Divvy's rebalancing problem (Cao et. al 2020). Leveraging the historical data of dock occupancy, the model forecasts bike availability, potentially enhancing operational efficiency. The methods section details the adaptation of StemGNN to Divvy's data, encompassing a specific period and various neighborhoods in Chicago. The results section presents the model's performance, emphasizing how different parameters affect forecasting accuracy. This paper aims to illustrate the potential of StemGNN in urban bike-sharing systems, offering insights for future advancements in predictive modeling for urban mobility.
- 
+
 # Methods
 
-In this section, the methodology employed in forecasting bicycle shortages at various Divvy Stations in Chicago using a modified version of the StemGNN model in python originally developed by Microsoft (StemGNN repository, Microsoft, 2023) will be described. 
+In this section, the methodology employed in forecasting bicycle shortages at various Divvy Stations in Chicago using a modified version of the StemGNN model in python originally developed by Microsoft (StemGNN repository, Microsoft, 2023) will be described.
+
 ## The Data
+
 The dataset used for this study was sourced from the Chicago Data Portal (City of Chicago, 2023), covering the period from March to September 2022. This dataset provided comprehensive historical information regarding the status of Divvy stations, including the availability and total number of docks at each station, recorded at 10-minute intervals.
 
-The data queried from the Chicago Data Portal (CITE DATA PORTAL) ranged from 2022-07-07 09:15:27 CDT to 2022-09-10 18:25:43 CDT. To facilitate model tuning and exploratory analysis, a focus was placed on specific neighborhoods, namely Uptown, North Center, Lincoln Square, which collectively encompassed 41 bike stations.  Subsequently, the data was reformatted in R to form a T*N matrix, with 'T' representing time stamps and 'N' representing nodes. Each entry in this matrix reflected the percentage of docks in use being the predictor. The final data set had 41 nodes and 9288 rows. For more details on the data cleaning see Appendix Section B. 
+The data queried from the Chicago Data Portal (2022) ranged from 2022-07-07 09:15:27 CDT to 2022-09-10 18:25:43 CDT. To facilitate model tuning and exploratory analysis, a focus was placed on specific neighborhoods, namely Uptown, North Center, Lincoln Square, which collectively encompassed 41 bike stations. Subsequently, the data was reformatted in R to form a T\*N matrix, with 'T' representing time stamps and 'N' representing nodes. Each entry in this matrix reflected the percentage of docks in use being the predictor. The final data set had 41 nodes and 9288 rows. For more details on the data cleaning see Appendix Section B.
 
 The StemGNN model, originally proposed by Cao et al. (2020), incorporates Discrete Fourier Transform (DFT) and Graph Fourier Transform (GFT) methodologies. DFT is employed to model temporal dependencies, enabling the identification of patterns such as seasonality and autocorrelation. On the other hand, GFT is utilized to analyze interseries correlations by examining spatial interactions between nodes.
 
 In this research, the focus was on fine-tuning two primary parameters of the StemGNN model: the learning rate and window size, while maintaining the default settings for other parameters. The learning rate influences the model's learning speed, and the window size specifies the quantity of past data points used for forecasting. Experiments were conducted with forecast horizons of 3 and 6 (equivalent to 30 and 60 minutes into the future), learning rates of 0.01, 0.001, and 0.0001, and window sizes of 6, 12, 18, were considered. All three learning rates were only run across window size 6 in the interest of time since the run time increases roughly in proportion to the increase in window size.
 
-Root Mean Square Error (RMSE) served as the primary evaluation metric to assess model performance. It is worth noting that RMSE can be calculated in various ways for a joint time series, as it effectively consists of different models, one for each node. In this study, RMSE for the entire output, encompassing both time and space, was computed as the chosen metric for evaluation. This approach provides a comprehensive measure of model performance across both temporal and spatial dimensions. In order to assess the model performance in context with the variability of the data, RMSE normalized by the standard deviation of the test data was also included. 
+Root Mean Square Error (RMSE) served as the primary evaluation metric to assess model performance. It is worth noting that RMSE can be calculated in various ways for a joint time series, as it effectively consists of different models, one for each node. In this study, RMSE for the entire output, encompassing both time and space, was computed as the chosen metric for evaluation. This approach provides a comprehensive measure of model performance across both temporal and spatial dimensions. In order to assess the model performance in context with the variability of the data, RMSE normalized by the standard deviation of the test data was also included.
 
 # Results
+
 This section presents the findings from the analysis focused on tuning the StemGNN model for forecasting bicycle dock availability at Divvy stations in Chicago. The objective was to ascertain the most effective model parameters, specifically window size and learning rate, for accurate predictions of dock availability. The impact of these parameters on the model's performance was thoroughly evaluated, leading to the identification of configurations that strike a balance between efficiency and precision. The insights gained here illuminate the complexities of model tuning and pave the way for future predictive modeling in urban mobility scenarios.
+
 ```{r echo=FALSE, message=FALSE, results='hide'}
 percent_metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
 ```
 
-## Model Tuning 
-The window size proved to be unimportant for model accuracy with a spread in normalized RMSE of only .002 for horizon 3 and .008 for horizon 6. As shown in Table 1, for horizon 3, a window size of 12 proved most accurate and for horizon 6, a window size of 6 performed best. The negligible improvement in performance for window size 12 for horizon 3 does not justify the fact that it doubled the run time. The key take away is that the smallest possible window size yields reasonable accuracy that either beat or closley rival models that consider more past data points.   
+## Model Tuning
+
+The window size proved to be unimportant for model accuracy with a spread in normalized RMSE of only .002 for horizon 3 and .008 for horizon 6. As shown in Table 1, for horizon 3, a window size of 12 proved most accurate and for horizon 6, a window size of 6 performed best. The negligible improvement in performance for window size 12 for horizon 3 does not justify the fact that it doubled the run time. The key take away is that the smallest possible window size yields reasonable accuracy that either beat or closley rival models that consider more past data points.
 
 ```{r echo=FALSE, message=FALSE }
 kable( percent_metrics_df %>% filter(LearningRate == .001) %>% select(-LearningRate), caption = "Table 1: Model results by window size (Learning Rate .001)")
@@ -44,35 +53,41 @@ kable( percent_metrics_df %>% filter(WindowSize == 6, Horizon == 3) %>% select(-
 ```
 
 Learning rate proved far more sensitive of a tuning parameter as evidenced by Figure 1 which plots RMSE by the exponents of learning rates on a base 10 scale. From this we can see $10^{-4}$ proves too slow and $10^{-2}$ proves too fast with a learning rate of $10^{-3}$ proving to yield optimal results.
-                          
-```{r echo=FALSE, message=FALSE }
+
+```{r echo=FALSE, message=FALSE, fig.cap="Figure 1: RMSE across different learning rates for the 30-minute forecast."}
 percent_metrics_df %>%
   filter(Horizon == 3, WindowSize == 6) %>%
   ggplot() +
   geom_line(aes(x = log10(LearningRate), y = RMSE)) +
   scale_x_continuous(breaks = c(-4, -3, -2)) +
   ggtitle("Tuning Learning Rate") + 
-  xlab("Learning Rate (Log Base 10)") + 
-  labs(caption = "Figure 1: RMSE across different learning rates for the 30-minute forecast.")
+  xlab("Learning Rate (Log Base 10)") 
 ```
 
 ## Most Optimal Model
-The most optimal models, balancing efficiency and accuracy, used a learning rate of $10^{-3}$ and a window size of 6 for both 30 minute and 60 minute forecasts. This resulted in a RMSE of 5.09% and 5.04% for each model respectively. These are very optimistic results since it implies that dock availability percentage can be predicted with approximately 5% accuracy. This does not consider though the variability of the data, so RMSE was calculated as well normalizing by the standard deviation of the test data. These yield less optimistic results but still imply reasonable accuracy with results of 21.4% and 21.2% of the test datas standard deviation for horizons 3 and 6.  
+
+The most optimal models, balancing efficiency and accuracy, used a learning rate of $10^{-3}$ and a window size of 6 for both 30 minute and 60 minute forecasts. This resulted in a RMSE of 5.09% and 5.04% for each model respectively. These are very optimistic results since it implies that dock availability percentage can be predicted with approximately 5% accuracy. This does not consider though the variability of the data, so RMSE was calculated as well normalizing by the standard deviation of the test data. These yield less optimistic results but still imply reasonable accuracy with results of 21.4% and 21.2% of the test datas standard deviation for horizons 3 and 6.
 
 # Discussion
-The results found in this study are promising showcasing the power of StemGNN for geospatial joint time series. With the continuing growth of bike share programs more accurate rebalancing models will continue to be an important field of study cutting down on the potential cost and improving the reliability of available bikes for commuters. The results were not directly comparable to the project done by Krumlinde (2019) since different predictors were used (trips from in Krumlinde's case and percent full in this study). Another model that was in the development phase is also underway for Divvy that relies on a Poisson model. This is being developed by The Data Science For Social Good (DSSG) foundation which has proven its success with the Capital Hill Bike Share program in Washington D.C. (Henderson and Fishman 2013). 
+
+The results found in this study are promising showcasing the power of StemGNN for geospatial joint time series. With the continuing growth of bike share programs more accurate rebalancing models will continue to be an important field of study cutting down on the potential cost and improving the reliability of available bikes for commuters. The results were not directly comparable to the project done by Krumlinde (2019) since different predictors were used (trips from in Krumlinde's case and percent full in this study). Another model that was in the development phase is also underway for Divvy that relies on a Poisson model. This is being developed by The Data Science For Social Good (DSSG) foundation which has proven its success with the Capital Hill Bike Share program in Washington D.C. (Henderson and Fishman 2013).
 
 ## Limitiations
-Both the Poisson model by DSSG and the model by Krumlinde either dealt with or plan to deal with Divvy data focusing around the Loop, the business district of Chicago. This study merely focused on four dense and populous residential neighborhoods each with their own unique restaurant and entertainment scenes. These neighborhoods were chosen due to largely not being accessible to one another by the CTA trains making Divvy bikes an optimal method of travel between neighborhoods. The idea was that these neighborhoods would be less complex than the Loop and serve as a good testing grounds for the viability of this model since they contain far less data points. 
+
+Both the Poisson model by DSSG and the model by Krumlinde either dealt with or plan to deal with Divvy data focusing around the Loop, the business district of Chicago. This study merely focused on four dense and populous residential neighborhoods each with their own unique restaurant and entertainment scenes. These neighborhoods were chosen due to largely not being accessible to one another by the CTA trains making Divvy bikes an optimal method of travel between neighborhoods. The idea was that these neighborhoods would be less complex than the Loop and serve as a good testing grounds for the viability of this model since they contain far less data points.
 
 ## Future Steps
-The next step for this model could include exploring some other tuning parameters such as Leaky Relu rate. Next adapting the code from Krumlinde and the DSSG for the percentage full data would help compare the StemGNN performance to other possible models. 
 
-The ultimate test will be to check its viability for the Loop which has the most Divvy activity and suffers from the worst balancing problems. It is the hope that this study will provide some working knowledge of optimal tuning parameters. There is no guarantee that the same parameters for the subsection examined in this project will be optimal for more complex networks, but it can at least serve as a starting point for model tuning. 
+The next step for this model could include exploring some other tuning parameters such as Leaky Relu rate. Next adapting the code from Krumlinde and the DSSG for the percentage full data would help compare the StemGNN performance to other possible models.
+
+The ultimate test will be to check its viability for the Loop which has the most Divvy activity and suffers from the worst balancing problems. It is the hope that this study will provide some working knowledge of optimal tuning parameters. There is no guarantee that the same parameters for the subsection examined in this project will be optimal for more complex networks, but it can at least serve as a starting point for model tuning.
 
 # Appendix
 
+Code listed here can also be found in its full context on the authors GitHub here <https://github.com/noahba65/cap-stone-PDAT>. The code for the model can be found in this subdirectory located here: <https://github.com/noahba65/cap-stone-PDAT/tree/main/src/stem_gnn_model>.
+
 ## A: Packages
+
 ```{r eval = FALSE}
 library(RSocrata) # For reading in data from the City of Chicago
 library(tidyverse) # For data cleaning and visualization
@@ -81,12 +96,24 @@ library(stringr) # For scrubbing directories for tuning parameters
 library(kableExtra) # For visualizing results
 ```
 
-## B: Data Setup
+### Packages Citations
 
+> Devlin, H., Schenk, T. Jr., Leynes, G., Lucius, N., Malc, J., Silverberg, M., & Schmeideskamp, P. (2023). RSocrata: Tools for downloading and using data from 'Socrata' data portals. R package version [1.7.15-1]. Retrieved from <https://github.com/Chicago/RSocrata>
+
+> Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L.D., François, R., Grolemund, G., Hayes, A., Henry, L., Hester, J., Kuhn, M., Pedersen, T.L., Miller, E., Bache, S.M., Müller, K., Ooms, J., Robinson, D., Seidel, D.P., Spinu, V., Takahashi, K., Vaughan, D., Wilke, C., Woo, K., & Yutani, H. (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686. <doi:10.21105/joss.01686>. Retrieved from <https://doi.org/10.21105/joss.01686>
+
+> Pebesma, E., & Bivand, R. (2023). Spatial Data Science: With applications in R. Chapman and Hall/CRC. <doi:10.1201/9780429459016>. Retrieved from <https://r-spatial.org/book/>
+
+> Wickham, H. (2023). stringr: Simple, Consistent Wrappers for Common String Operations. R package version 1.5.1. Retrieved from <https://github.com/tidyverse/stringr>
+
+> Zhu, H., Travison, T., Tsai, T., Beasley, W., Xie, Y., Yu, G., Laurent, S., Shepherd, R., Sidi, Y., Salzer, B., Gui, G., Fan, Y., Murdoch, D., & Evans, B. (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version [1.3.4]. Retrieved from <https://github.com/haozhu233/kableExtra>
+
+## B: Data Setup
 
 ### 1: Data Acquisition
 
-This code reads in three data sets, Boundaries - Community Areas (2018), Divvy Bicycle Stations (2022), and Divvy Bicycle Stations - Historical (2022). Boundaries - Community Areas is neccesary for geospatial data filtering in combination with Divvy Bicycle stations. Divvy Bicyle Stations, read in with R Socrata is simply a list of Divvy stations with location data which works with the Community Areas dataset. Divvy Bicycle Stations - Historical is the crucial time series data set outlined in the Methods section.   
+This code reads in three data sets, Boundaries - Community Areas (2018), Divvy Bicycle Stations (2022), and Divvy Bicycle Stations - Historical (2022). Boundaries - Community Areas is neccesary for geospatial data filtering in combination with Divvy Bicycle stations. Divvy Bicyle Stations, read in with R Socrata is simply a list of Divvy stations with location data which works with the Community Areas dataset. Divvy Bicycle Stations - Historical is the crucial time series data set outlined in the Methods section.
+
 ```{r eval = FALSE}
 
 # Read in a local geojson file containing the shapes of Chicago Neighborhoods
@@ -102,7 +129,8 @@ divvy_raw <- read_csv("/Users/noahanderson/Documents/Data/Divvy_Bicycle_Stations
 
 ### 2: Data Cleaning
 
-The Divvy Stations and Community Areas datasets are used to create `id_filter` that is used to filter the time series data only spanning the target neighborhoods. 
+The Divvy Stations and Community Areas datasets are used to create `id_filter` that is used to filter the time series data only spanning the target neighborhoods.
+
 ```{r eval = FALSE}
 # Define vector for community areas to be queried
 target_ca <- c( "Uptown", "North Center", "Lincoln Square")
@@ -143,11 +171,12 @@ save_csv(divvy_10_min_wide_percent, "/Users/noahanderson/Documents/GitHub/cap-st
 
 ```
 
-## C: Modeling
-
-## D: Evaluation
+## C: Evaluation
 
 ### 1: Custom Functions
+
+This code builds custom functions for reading in model output data specific to the structure of the project repository along with functions for computing model metrics.
+
 ```{r eval = FALSE}
 read_error_and_target_files <- function(base_dir) {
   # List all subdirectories within the base directory
@@ -202,7 +231,10 @@ extract_info <- function(dir_name) {
 ```
 
 ### 2: Evaluating Metrics
-```{r}
+
+This code reads in and computes model metrics that are presented in the study.
+
+```{r eval = FALSE}
 base_dir <- "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/output/divvy_10_min_wide_percent/test"
 
 # Reads in absolute error datasets
@@ -228,7 +260,10 @@ metrics_df <- rmse_results_df_clean %>%
 write_csv(metrics_df, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
 ```
 
-## E Visualizations
+## D Visualizations
+
+This code reads in metrics data created in the previous section and builds the vizualistions used in this paper.
+
 ```{r eval = FALSE}
 # Read in metrics data
 percent_metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
@@ -250,27 +285,20 @@ percent_metrics_df %>%
   labs(caption = "Figure 1: RMSE across different learning rates for the 30-minute forecast.")
 ```
 
-
 # References
 
-> Microsoft. (2023). StemGNN: Spectral Temporal Graph Neural Network. GitHub. Retrieved from https://github.com/microsoft/StemGNN
+> Cao, D., Wang, Y., Duan, J., Zhang, C., Zhu, X., Huang, C., Tong, Y., Xu, B., Bai, J., Tong, J., & Zhang, Q. (2020). Spectral temporal graph neural network for multivariate time-series forecasting. Advances in neural information processing systems, 33, 17766-17778. <https://doi.org/10.48550/arXiv.2103.07719>
 
-> Cao, D., Wang, Y., Duan, J., Zhang, C., Zhu, X., Huang, C., ... & Zhang, Q. (2020).  
-Spectral temporal graph neural network for multivariate time-series forecasting.  
-Advances in neural information processing systems, 33, 17766-17778.
+> City of Chicago. (2018, December 18). Boundaries - Community Areas (current). Retrieved [2023 October 30], from <https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas-current-/cauq-8yn6>
+
+> City of Chicago. (2022, September 10). Divvy Bicycle Stations. Retrieved [2022 September 10], from <https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations/bbyy-e7gq>
+
+> City of Chicago. (2022, September 10). Divvy Bicycle Stations - Historical. Retrieved [2023 November 26], from <https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations-Historical/eq45-8inv>
 
 > City of Chicago. "Divvy Trips." Data published by City of Chicago. Accessed on November 27, 2023. Available at: <https://data.cityofchicago.org/Transportation/Divvy-Trips/fg6s-gzvg>.
 
-> Krumlinde, Z. (2019, July 22). Using Machine Learning to Predict Hourly Divvy Bike-Sharing Checkouts per Station. Towards Data Science. https://towardsdatascience.com/predicting-hourly-divvy-bike-sharing-checkouts-per-station-65b1d217d8a4
+> Henderson, J., & Fishman, A. (2013, August 9). Divvy: Helping Chicago's New Bike Share Find Its Balance. Data Science For Social Good. <https://www.dssgfellowship.org/2013/08/09/divvy-helping-chicagos-new-bike-share-find-its-balance/>
 
+> Krumlinde, Z. (2019, July 22). Using Machine Learning to Predict Hourly Divvy Bike-Sharing Checkouts per Station. Towards Data Science. <https://towardsdatascience.com/predicting-hourly-divvy-bike-sharing-checkouts-per-station-65b1d217d8a4>
 
-> Henderson, J., & Fishman, A. (2013, August 9). Divvy: Helping Chicago’s New Bike Share Find Its Balance. Data Science For Social Good. https://www.dssgfellowship.org/2013/08/09/divvy-helping-chicagos-new-bike-share-find-its-balance/
-
-> City of Chicago. (2022, September 10). Divvy Bicycle Stations - Historical. Retrieved [2023 November 26], from https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations-Historical/eq45-8inv
-
-> City of Chicago. (2018, December 18). Boundaries - Community Areas (current). Retrieved [2023 October 30], from https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas-current-/cauq-8yn6
-
-> City of Chicago. (2022, September 10). Divvy Bicycle Stations. Retrieved [2022 September 10], from https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations/bbyy-e7gq
-
-
-
+> Microsoft. (2023). StemGNN: Spectral Temporal Graph Neural Network. GitHub. Retrieved from <https://github.com/microsoft/StemGNN>
