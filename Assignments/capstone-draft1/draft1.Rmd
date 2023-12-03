@@ -2,8 +2,6 @@
 title: "StemGNN for Divvy Bike Re-balancing"
 author: "Noah Anderson"
 output: pdf_document
-editor_options: 
-  chunk_output_type: console
 ---
 ```{r echo=FALSE, message=FALSE, results='hide'}
 library(tidyverse)
@@ -18,7 +16,11 @@ This study applies StemGNN, validated in traffic prediction, to Divvy's rebalanc
  
 # Methods
 
-In this section, the methodology employed in forecasting bicycle shortages at various Divvy Stations in Chicago using a modified version of the StemGNN model in python originally developed by Microsoft (StemGNN repository, Microsoft, 2023) will be described. The dataset used for this study was sourced from the Chicago Data Portal (City of Chicago, 2023), covering the period from March to September 2022. This dataset provided comprehensive historical information regarding the status of Divvy stations, including the availability and total number of docks at each station, recorded at 10-minute intervals. To facilitate model tuning and exploratory analysis, a focus was placed on specific neighborhoods, namely Uptown, North Center, Lincoln Square, which collectively encompassed 41 bike stations.  Subsequently, the data was reformatted in R to form a T*N matrix, with 'T' representing time stamps and 'N' representing nodes. Each entry in this matrix reflected the percentage of docks in use being the predictor. 
+In this section, the methodology employed in forecasting bicycle shortages at various Divvy Stations in Chicago using a modified version of the StemGNN model in python originally developed by Microsoft (StemGNN repository, Microsoft, 2023) will be described. 
+## The Data
+The dataset used for this study was sourced from the Chicago Data Portal (City of Chicago, 2023), covering the period from March to September 2022. This dataset provided comprehensive historical information regarding the status of Divvy stations, including the availability and total number of docks at each station, recorded at 10-minute intervals.
+
+The data queried from the Chicago Data Portal (CITE DATA PORTAL) ranged from 2022-07-07 09:15:27 CDT to 2022-09-10 18:25:43 CDT. To facilitate model tuning and exploratory analysis, a focus was placed on specific neighborhoods, namely Uptown, North Center, Lincoln Square, which collectively encompassed 41 bike stations.  Subsequently, the data was reformatted in R to form a T*N matrix, with 'T' representing time stamps and 'N' representing nodes. Each entry in this matrix reflected the percentage of docks in use being the predictor. The final data set had 41 nodes and 9288 rows. For more details on the data cleaning see Appendix Section B. 
 
 The StemGNN model, originally proposed by Cao et al. (2020), incorporates Discrete Fourier Transform (DFT) and Graph Fourier Transform (GFT) methodologies. DFT is employed to model temporal dependencies, enabling the identification of patterns such as seasonality and autocorrelation. On the other hand, GFT is utilized to analyze interseries correlations by examining spatial interactions between nodes.
 
@@ -42,7 +44,7 @@ kable( percent_metrics_df %>% filter(WindowSize == 6, Horizon == 3) %>% select(-
 ```
 
 Learning rate proved far more sensitive of a tuning parameter as evidenced by Figure 1 which plots RMSE by the exponents of learning rates on a base 10 scale. From this we can see $10^{-4}$ proves too slow and $10^{-2}$ proves too fast with a learning rate of $10^{-3}$ proving to yield optimal results.
-
+                          
 ```{r echo=FALSE, message=FALSE }
 percent_metrics_df %>%
   filter(Horizon == 3, WindowSize == 6) %>%
@@ -70,15 +72,184 @@ The ultimate test will be to check its viability for the Loop which has the most
 
 # Appendix
 
-## Data Setup
+## A: Packages
+```{r eval = FALSE}
+library(RSocrata) # For reading in data from the City of Chicago
+library(tidyverse) # For data cleaning and visualization
+library(sf) # For geospatial data manipulation
+library(stringr) # For scrubbing directories for tuning parameters
+library(kableExtra) # For visualizing results
+```
 
-### Data Acquisition
+## B: Data Setup
 
-### Data Cleaning
 
-## Data Modeling
+### 1: Data Acquisition
 
-## Data Evaluation
+This code reads in three data sets, Boundaries - Community Areas (2018), Divvy Bicycle Stations (2022), and Divvy Bicycle Stations - Historical (2022). Boundaries - Community Areas is neccesary for geospatial data filtering in combination with Divvy Bicycle stations. Divvy Bicyle Stations, read in with R Socrata is simply a list of Divvy stations with location data which works with the Community Areas dataset. Divvy Bicycle Stations - Historical is the crucial time series data set outlined in the Methods section.   
+```{r eval = FALSE}
+
+# Read in a local geojson file containing the shapes of Chicago Neighborhoods
+chicago_ca_raw <- st_read("/Users/noahanderson/Documents/Data/Boundaries-Neighborhoods.geojson") 
+
+# Read in Divvy names and locations data set 
+divvy_stations_url <- "https://data.cityofchicago.org/resource/bk89-9dk7.json"
+divvy_stations_raw <- read.socrata(divvy_stations_url) 
+
+# Read in historical Divvy data
+divvy_raw <- read_csv("/Users/noahanderson/Documents/Data/Divvy_Bicycle_Stations_-_Historical.csv")
+```
+
+### 2: Data Cleaning
+
+The Divvy Stations and Community Areas datasets are used to create `id_filter` that is used to filter the time series data only spanning the target neighborhoods. 
+```{r eval = FALSE}
+# Define vector for community areas to be queried
+target_ca <- c( "Uptown", "North Center", "Lincoln Square")
+
+# Set coordinate reference system for community areas
+chicago_ca_clean <- chicago_ca_raw %>%
+  st_transform(4269)  
+
+# Convert stations dataset to sf object and set coordinate reference system
+divvy_stations_clean <- divvy_stations_raw %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4269)
+
+# Join data frames to identity stations in target community areas
+divvy_stations_in_ca <- st_join(chicago_ca_clean %>% filter(pri_neigh %in% target_ca), divvy_stations_clean) 
+
+# Create filter for station ID's in the target Community Areas 
+id_filter <- divvy_stations_in_ca$id
+
+# Clean divvy data
+divvy_10_min_clean_percent <- divvy_raw %>%
+  rename( percent_full = `Percent Full` ) %>%
+  filter( ID %in% id_filter) %>%
+  select(Timestamp, ID, percent_full) %>%
+  mutate(Timestamp = as.POSIXct(Timestamp, format = "%m/%d/%Y %I:%M:%S %p"))
+
+
+# Pivot data to wide T*N format
+divvy_10_min_wide_percent <- divvy_10_min_clean_percent %>%
+  pivot_wider(names_from = ID, values_from = percent_full) %>%
+  arrange(Timestamp) %>%
+  select(-Timestamp)
+
+# Remove column names
+colnames(divvy_10_min_wide_percent) <- NULL
+
+# Save csv to StemGNN sub directory
+save_csv(divvy_10_min_wide_percent, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/dataset/divvy_10_min_wide_percent.csv")
+
+```
+
+## C: Modeling
+
+## D: Evaluation
+
+### 1: Custom Functions
+```{r eval = FALSE}
+read_error_and_target_files <- function(base_dir) {
+  # List all subdirectories within the base directory
+  subdirs <- list.dirs(base_dir, full.names = TRUE, recursive = FALSE)
+  
+  # Initialize a list to store the data frames
+  data_list <- list()
+  
+  # Loop through each subdirectory
+  for (dir in subdirs) {
+    # Construct file paths
+    error_file_path <- file.path(dir, "predict_abs_error.csv")
+    target_file_path <- file.path(dir, "target.csv")
+    
+    # Check if the files exist and read them
+    if (file.exists(error_file_path) && file.exists(target_file_path)) {
+      error_df <- read_csv(error_file_path, col_names = FALSE)
+      target_df <- read_csv(target_file_path, col_names = FALSE)
+      
+      # Add the data frames to the list
+      data_list[[basename(dir)]] <- list(Error = error_df, Target = target_df)
+    }
+  }
+  
+  return(data_list)
+}
+
+# Function to calculate RMSE and normalized RMSE by standard deviation
+calculate_rmse <- function(data_list, dir_name) {
+  error_df <- data_list$Error
+  target_df <- data_list$Target
+  
+  # Calculate RMSE
+  rmse <- sqrt(mean(as.matrix(error_df^2)))
+  
+  # Calculate the standard deviation of the target values
+  std_dev <- sd(as.vector(as.matrix(target_df)))
+  
+  # Normalize RMSE by the standard deviation
+  normalized_rmse <- rmse / std_dev
+  
+  return(data.frame(Directory = dir_name, RMSE = rmse, NormalizedRMSE = normalized_rmse))
+}
+
+# Function to extract window size and horizon from directory name
+extract_info <- function(dir_name) {
+  window_size <- as.numeric(str_extract(dir_name, "(?<=window_size_)[0-9]+"))
+  horizon <- as.numeric(str_extract(dir_name, "(?<=horizon_)[0-9]+"))
+  learning_rate <- as.numeric(str_extract(dir_name, "(?<=lr_)[0-9\\.e-]+"))
+  return(c(WindowSize = window_size, Horizon = horizon, LearningRate = learning_rate))
+}
+```
+
+### 2: Evaluating Metrics
+```{r}
+base_dir <- "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/stem_gnn_model/output/divvy_10_min_wide_percent/test"
+
+# Reads in absolute error datasets
+abs_error_and_target_data <- read_error_and_target_files(base_dir)
+
+# Apply the RMSE calculation to each dataframe and combine the results into a dataframe
+rmse_results_df <- map_df(names(abs_error_and_target_data), ~calculate_rmse(abs_error_and_target_data[[.x]], .x))
+
+
+# Add columns for window size and learning rate
+rmse_results_df_clean <- rmse_results_df %>%
+  mutate(WindowSize = map_dbl(Directory, ~extract_info(.x)["WindowSize"]),
+         Horizon = map_dbl(Directory, ~extract_info(.x)["Horizon"]),
+         LearningRate = map_dbl(Directory, ~extract_info(.x)["LearningRate"])) %>%
+  select(-Directory)
+
+# Select and arrange data for final format
+metrics_df <- rmse_results_df_clean %>%
+  select(Horizon, LearningRate, WindowSize, RMSE, NormalizedRMSE) %>%
+  arrange(Horizon, WindowSize)
+
+# Save results
+write_csv(metrics_df, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
+```
+
+## E Visualizations
+```{r eval = FALSE}
+# Read in metrics data
+percent_metrics_df <- read_csv("/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
+
+# Create table 1
+kable( percent_metrics_df %>% filter(LearningRate == .001) %>% select(-LearningRate), caption = "Table 1: Model results by window size (Learning Rate .001)")
+
+# Create table 2
+kable( percent_metrics_df %>% filter(WindowSize == 6, Horizon == 3) %>% select(-Horizon, -WindowSize), caption = "Table 2: Metrics by learning rate (Horizon 3, Window Size 6")
+
+# Create figure 1
+percent_metrics_df %>%
+  filter(Horizon == 3, WindowSize == 6) %>%
+  ggplot() +
+  geom_line(aes(x = log10(LearningRate), y = RMSE)) +
+  scale_x_continuous(breaks = c(-4, -3, -2)) +
+  ggtitle("Tuning Learning Rate") + 
+  xlab("Learning Rate (Log Base 10)") + 
+  labs(caption = "Figure 1: RMSE across different learning rates for the 30-minute forecast.")
+```
+
 
 # References
 
@@ -90,16 +261,16 @@ Advances in neural information processing systems, 33, 17766-17778.
 
 > City of Chicago. "Divvy Trips." Data published by City of Chicago. Accessed on November 27, 2023. Available at: <https://data.cityofchicago.org/Transportation/Divvy-Trips/fg6s-gzvg>.
 
-
 > Krumlinde, Z. (2019, July 22). Using Machine Learning to Predict Hourly Divvy Bike-Sharing Checkouts per Station. Towards Data Science. https://towardsdatascience.com/predicting-hourly-divvy-bike-sharing-checkouts-per-station-65b1d217d8a4
 
 
 > Henderson, J., & Fishman, A. (2013, August 9). Divvy: Helping Chicago’s New Bike Share Find Its Balance. Data Science For Social Good. https://www.dssgfellowship.org/2013/08/09/divvy-helping-chicagos-new-bike-share-find-its-balance/
 
+> City of Chicago. (2022, September 10). Divvy Bicycle Stations - Historical. Retrieved [2023 November 26], from https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations-Historical/eq45-8inv
 
+> City of Chicago. (2018, December 18). Boundaries - Community Areas (current). Retrieved [2023 October 30], from https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas-current-/cauq-8yn6
 
-
-
+> City of Chicago. (2022, September 10). Divvy Bicycle Stations. Retrieved [2022 September 10], from https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations/bbyy-e7gq
 
 
 
