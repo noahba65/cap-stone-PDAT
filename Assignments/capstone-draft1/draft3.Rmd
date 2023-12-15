@@ -1,13 +1,16 @@
 ---
 title: "StemGNN for Divvy Bike Re-balancing"
 author: "Noah Anderson"
+date: "December 4th 2023"
 output: pdf_document
-abstrac: "This study applies the StemGNN model, originally developed for traffic forecasting, to the challenge of bike rebalancing in Chicago's Divvy bike-share program. Utilizing data from the Chicago Data Portal, the research focuses on forecasting dock availability at various stations. The model treats each station as a node within a network, analyzing spatial and temporal correlations. Optimal model configurations were determined through fine-tuning learning rates and window sizes. The most effective model, with a learning rate of $10^{-3}$ and a window size of 6, achieved RMSEs of 5.09% and 5.04% for 30 and 60-minute forecasts, respectively. When normalized by the standard deviation of the test data, the results were 21.4% and 21.2%, indicating the model's potential in urban bike-sharing systems for predictive modeling and urban mobility management."
+abstract: "This study applies the StemGNN model, originally developed for traffic forecasting, to the challenge of bike rebalancing in Chicago's Divvy bike-share program. Utilizing data from the Chicago Data Portal, the research focuses on forecasting dock availability at various stations. The model treats each station as a node within a network, analyzing spatial and temporal correlations. Optimal model configurations were determined through fine-tuning learning rates and window sizes. The most effective model, with a learning rate of $10^{-3}$ and a window size of 6, achieved RMSEs of 5.09% and 5.04% for 30 and 60-minute forecasts, respectively. When normalized by the standard deviation of the test data, the results were 21.4% and 21.2%, indicating the model's potential in urban bike-sharing systems for predictive modeling and urban mobility management."
 ---
 
 ```{r echo=FALSE, message=FALSE, results='hide'}
 library(tidyverse)
 library(kableExtra)
+library(RSocrata)
+library(sf)
 ```
 
 # Introduction
