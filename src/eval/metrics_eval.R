@@ -1,5 +1,5 @@
 
-# Usage
+# read in data
 abs_error_and_target_data <- read_error_and_target_files(base_dir)
 
 # Apply the RMSE calculation to each dataframe and combine the results into a dataframe
@@ -14,9 +14,10 @@ rmse_results_df_clean <- rmse_results_df %>%
          LearningRate = map_dbl(Directory, ~extract_info(.x)["LearningRate"])) %>%
   select(-Directory)
 
-
+# Create metrics data frame
 metrics_df <- rmse_results_df_clean %>%
   select(Horizon, LearningRate, WindowSize, RMSE, NormalizedRMSE) %>%
   arrange(Horizon, WindowSize)
 
+# save metrics csv
 write_csv(metrics_df, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
