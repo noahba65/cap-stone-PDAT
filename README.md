@@ -73,6 +73,25 @@ The project successfully demonstrates the application of StemGNN in predicting b
 The study underscores the potential of advanced predictive models like StemGNN in urban bike-sharing systems. It opens up possibilities for more responsive and efficient bike rebalancing methods, contributing to smarter urban mobility solutions.
 
 
+
+## Instructions for Replication
+
+To replicate the results of this project, follow these detailed steps:
+
+1. **Data Acquisition**: Start by querying data from the "Historical Divvy Trips" dataset provided by the City of Chicago. Ensure to set your desired date parameters to fetch relevant data. This dataset is pivotal as it contains extensive information on bike station statuses, essential for this analysis.
+
+2. **Data Preprocessing and Model Execution**: After acquiring the data, proceed to the [data_setup](src/data_setup) subdirectory. Run the [main_data_setup.R](src/data_setup/main_data_setup.R) script to process the raw Divvy data. This script transforms the data into a T*N matrix format and saves it to the [dataset](src/stem_gnn_model/dataset) folder in the [stem_gnn_model](src/stem_gnn_model) subdirectory. Ensure that all parameters in the script are adjusted according to your analysis requirements.
+
+   Next, within the same [stem_gnn_model](src/stem_gnn_model) subdirectory, and after setting up Python 3.7.9 in the project directory, execute the StemGNN model using the following command:
+   ```
+   python main.py --train True --evaluate True --dataset divvy_10_min_wide_percent --window_size 6 --horizon 3 --norm_method z_score --epoch 15 --lr 1e-3
+   ```
+   This command will train the StemGNN model and then evaluate its performance on the test set. The live training updates will be displayed, and the results, including target, predict, and error CSV files, are saved in the [output](src/stem_gnn_model/output) folder. The results are organized first by dataset, then segregated into separate folders for training and testing data, and further categorized based on different sets of tuning parameters. For the next steps, you may need to reorganize these folders manually.
+
+3. **Model Performance Evaluation**: For the final step, evaluate the model's performance on the test data using the [main_eval.R](src/eval/main_eval.R) script located in the [eval](src/eval) directory. This script computes key performance metrics by processing the output files from the StemGNN model, thus providing a comprehensive assessment of the model's accuracy and effectiveness.
+
+Adhering to these instructions ensures an accurate replication of the project's findings. Each script and dataset is integral to the process, and their proper execution is crucial for consistent and reliable results.
+
 ## References
 
 City of Chicago. (2018, December 18). Boundaries - Community Areas (current). Retrieved [2023 October 30], from https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries- Community-Areas-current-/cauq-8yn6
