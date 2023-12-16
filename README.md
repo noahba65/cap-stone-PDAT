@@ -56,7 +56,7 @@ This repository holds the code used in my Data Science Cap Stone for my certfica
 Divvy's expansion has led to a significant imbalance in bike availability across different stations, with some stations facing shortages and others an excess. Traditional manual rebalancing strategies have been inadequate in addressing these dynamic changes. This project proposes a novel approach using advanced predictive modeling to anticipate bike availability, thereby informing more effective rebalancing strategies.
 
 ## Methodology
-The methodology revolves around adapting the StemGNN model, initially designed for traffic forecasting, to the specific context of bike sharing systems. The model treats each bike station as a node in a network, analyzing spatial-temporal data to forecast dock availability. Key aspects of the methodology include:
+The methodology revolves around adapting the StemGNN model, initially designed for traffic forecasting, to the specific context of bike-sharing systems. The model treats each bike station as a node in a network, analyzing spatial-temporal data to forecast dock availability. Key aspects of the methodology include:
 
 1. **Data Acquisition and Processing**: Historical data from the Chicago Data Portal, covering dock availability at various stations, is used. The data spans from March to September 2022 and includes detailed information about station statuses at 10-minute intervals. This data is cleaned and reformatted to suit the needs of the StemGNN model. Relevant scripts and processes for this stage are available in the [data_setup directory](src/data_setup), 
 
@@ -74,5 +74,16 @@ The study underscores the potential of advanced predictive models like StemGNN i
 
 
 ## References
-[Include relevant references from your study]
+
+City of Chicago. (2018, December 18). Boundaries - Community Areas (current). Retrieved [2023 October 30], from https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries- Community-Areas-current-/cauq-8yn6
+
+City of Chicago. (2022, September 10). Divvy Bicycle Stations. Retrieved [2022 September 10], from https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations/bbyy-e7gq
+
+City of Chicago. (2022, September 10). Divvy Bicycle Stations - Historical. Retrieved [2023 November 26], from https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations- Historical/eq45-8inv
+
+City of Chicago. “Divvy Trips.” Data published by City of Chicago. Accessed on November 27, 2023. Available at: https://data.cityofchicago.org/Transportation/Divvy-Trips/fg6s-gzvg.
+
+Microsoft. (2023). StemGNN: Spectral Temporal Graph Neural Network. GitHub. Retrieved from https://github.com/microsoft/StemGNN
+
+
 
