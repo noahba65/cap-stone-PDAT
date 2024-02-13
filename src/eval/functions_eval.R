@@ -1,50 +1,31 @@
-read_error_and_target_files <- function(base_dir) {
-  # List all subdirectories within the base directory
-  subdirs <- list.dirs(base_dir, full.names = TRUE, recursive = FALSE)
+mean_mase_per_node <- function(abs_error, actual, horizon) {
+  # Ensure inputs are numeric matrices
+  abs_errors <- as.matrix(abs_error)
+  actual_values <- as.matrix(actual)
   
-  # Initialize a list to store the data frames
-  data_list <- list()
+  # Calculate MAE of forecast for each node
+  mae_forecast <- apply(abs_errors, 2, mean, na.rm = TRUE)
   
-  # Loop through each subdirectory
-  for (dir in subdirs) {
-    # Construct file paths
-    error_file_path <- file.path(dir, "predict_abs_error.csv")
-    target_file_path <- file.path(dir, "target.csv")
-    
-    # Check if the files exist and read them
-    if (file.exists(error_file_path) && file.exists(target_file_path)) {
-      error_df <- read_csv(error_file_path, col_names = FALSE)
-      target_df <- read_csv(target_file_path, col_names = FALSE)
-      
-      # Add the data frames to the list
-      data_list[[basename(dir)]] <- list(Error = error_df, Target = target_df)
-    }
-  }
+  # Calculate MAE of naive forecast for each node
+  mae_naive <- apply(actual_values, 2, function(x) mean(abs(diff(x, lag = horizon)), na.rm = TRUE))
   
-  return(data_list)
+  # Calculate MASE for each node
+  mase_values <- mae_forecast / mae_naive
+  
+  mean_mase <- mean(mase_values)
+  
+  return(mean_mase)
 }
 
-# Function to calculate RMSE and normalized RMSE
-calculate_rmse <- function(data_list, dir_name) {
-  error_df <- data_list$Error
-  target_df <- data_list$Target
+mean_rmse_per_node <- function(abs_error) {
+  # Ensure abs_error is a numeric matrix
+  abs_error <- as.matrix(abs_error)
   
-  # Calculate RMSE
-  rmse <- sqrt(mean(as.matrix(error_df^2)))
+  # Calculate RMSE for each node by taking the square root of the mean of the squared errors
+  rmse_per_node <- apply(abs_error^2, 2, function(x) sqrt(mean(x, na.rm = TRUE)))
   
-  # Calculate the standard deviation of the target values
-  std_dev <- sd(as.vector(as.matrix(target_df)))
+  # Calculate the average RMSE across all nodes
+  avg_rmse <- mean(rmse_per_node)
   
-  # Normalize RMSE by the standard deviation
-  normalized_rmse <- rmse / std_dev
-  
-  return(data.frame(Directory = dir_name, RMSE = rmse, NormalizedRMSE = normalized_rmse))
-}
-
-# Function to extract window size and horizon from directory name
-extract_info <- function(dir_name) {
-  window_size <- as.numeric(str_extract(dir_name, "(?<=window_size_)[0-9]+"))
-  horizon <- as.numeric(str_extract(dir_name, "(?<=horizon_)[0-9]+"))
-  learning_rate <- as.numeric(str_extract(dir_name, "(?<=lr_)[0-9\\.e-]+"))
-  return(c(WindowSize = window_size, Horizon = horizon, LearningRate = learning_rate))
+  return(avg_rmse)
 }

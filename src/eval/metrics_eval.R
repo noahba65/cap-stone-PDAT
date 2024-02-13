@@ -1,23 +1,12 @@
 
-# read in data
-abs_error_and_target_data <- read_error_and_target_files(base_dir)
+mase_h3 <- mean_mase_per_node(abs_error_h3, actual_h3, horizon = 3)
+print(mase_h3)
 
-# Apply the RMSE calculation to each dataframe and combine the results into a dataframe
-# rmse_results_df <- map_df(names(abs_error_and_target_data), ~calculate_rmse(abs_error_and_target_data[[.x]], .x))
-rmse_results_df <- map_df(names(abs_error_and_target_data), ~calculate_rmse(abs_error_and_target_data[[.x]], .x))
+mase_h6 <- mean_mase_per_node(abs_error_h6, actual_h6, horizon = 6)
+print(mase_h6)
 
+rmse_h3 <- mean_rmse_per_node(abs_error_h3)
+print(rmse_h3)
 
-# Add columns for window size and learning rate
-rmse_results_df_clean <- rmse_results_df %>%
-  mutate(WindowSize = map_dbl(Directory, ~extract_info(.x)["WindowSize"]),
-         Horizon = map_dbl(Directory, ~extract_info(.x)["Horizon"]),
-         LearningRate = map_dbl(Directory, ~extract_info(.x)["LearningRate"])) %>%
-  select(-Directory)
-
-# Create metrics data frame
-metrics_df <- rmse_results_df_clean %>%
-  select(Horizon, LearningRate, WindowSize, RMSE, NormalizedRMSE) %>%
-  arrange(Horizon, WindowSize)
-
-# save metrics csv
-write_csv(metrics_df, "/Users/noahanderson/Documents/GitHub/cap-stone-PDAT/src/eval/data/percent_metrics_df.csv")
+rmse_h6 <- mean_rmse_per_node(abs_error_h6)
+print(rmse_h6)
