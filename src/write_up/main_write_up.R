@@ -1,5 +1,5 @@
 library(tidyverse)
-library(stringr)
+library(kableExtra)
 
 
 source("src/eval/functions_eval.R")
