@@ -3,7 +3,7 @@
 Author: Noah Anderson  
 Date: December 4th, 2023
 
-This repository holds the code used in my Data Science Cap Stone for my certficate in Data Science and Analytic Story Telling from Truman State University. The paper containing all the results as well as a more in depth description of the context can be found here 
+This repository holds the code used in my Data Science Cap Stone for my certficate in Data Science and Analytic Story Telling from Truman State University. The paper containing all the results as well as a more in depth description of the context can be found here [final_paper.pdf](Assignments/final-paper/final_paper.pdf).
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -68,7 +68,7 @@ The methodology revolves around adapting the StemGNN model, initially designed f
 
 
 ## Results
-The project successfully demonstrates the application of StemGNN in predicting bike station dock availability with considerable accuracy. The findings indicate promising avenues for employing machine learning in urban transportation challenges.
+The project successfully demonstrates the application of StemGNN in predicting bike station dock availability with considerable accuracy. The findings indicate promising avenues for employing machine learning in urban transportation challenges. 
 
 ## Discussion
 The study underscores the potential of advanced predictive models like StemGNN in urban bike-sharing systems. It opens up possibilities for more responsive and efficient bike rebalancing methods, contributing to smarter urban mobility solutions.
