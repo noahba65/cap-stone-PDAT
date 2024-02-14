@@ -24,8 +24,8 @@ kable_styled <- kable(metrics_df, "html", align = c('l', 'c', 'r'),
                       col.names = c("Metric", "Horizon", "Value")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"), 
                 full_width = TRUE, 
-                position = "center") %>%
-  column_spec(1, width = ".5in") %>%  # Adjust the width of the first column
+                position = "center", full_width = F) %>%
+  column_spec(1, width = ".2in") %>%  # Adjust the width of the first column
   column_spec(2, width = ".5in") %>%  # Adjust the width of the second column
   column_spec(3, width = ".5in")      # Adjust the width of the third column
 
