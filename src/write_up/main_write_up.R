@@ -15,7 +15,7 @@ dir_h6 <- "src/stem_gnn_model/output/divvy_10_min_wide_percent/test/test_horizon
 chicago_ca_path <- paste0(base_dir, "Data/Boundaries-Neighborhoods.geojson")
 
 # Divvy URL for RSocrata
-divvy_stations_url <- "https://data.cityofchicago.org/resource/bk89-9dk7.json"
+divvy_stations_url <- "https://data.cityofchicago.org/resource/bbyy-e7gq.json"
 
 # Results file names
 abs_error_file_name <- "predict_abs_error.csv"
@@ -23,9 +23,11 @@ actual_file_name <- "target.csv"
   
 # Construct results file paths
 abs_error_file_path_h3 <- paste0(base_dir, dir_h3, abs_error_file_name)
-actual_file_path_h3 <- paste0(base_dir_h3, dir_h3, actual_file_name)
+actual_file_path_h3 <- paste0(base_dir, dir_h3, actual_file_name)
 abs_error_file_path_h6 <- paste0(base_dir, dir_h6, abs_error_file_name)
 actual_file_path_h6 <- paste0(base_dir, dir_h6, actual_file_name)
+
+target_ca <- c("Uptown", "North Center", "Lincoln Square")
 
 message("Importing data.")
 source("src/write_up/import_write_up.R")
