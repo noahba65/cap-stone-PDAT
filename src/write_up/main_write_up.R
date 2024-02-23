@@ -1,24 +1,38 @@
 library(tidyverse)
 library(kableExtra)
+library(RSocrata)
+library(sf)
 
+# Read in custom functions
+source("src/write_up/functions_write_up.R")
 
-source("src/eval/functions_eval.R")
+base_dir <- "~/Documents/GitHub/stemGNN_divvy/"
+# Results file paths for each horizon
+dir_h3 <- "src/stem_gnn_model/output/divvy_10_min_wide_percent/test/test_horizon_3_window_size_6_lr_1.0e-03/"
+dir_h6 <- "src/stem_gnn_model/output/divvy_10_min_wide_percent/test/test_horizon_6_window_size_6_lr_1.0e-03/"
 
-base_dir_h3 <- "~/Documents/GitHub/stemGNN_divvy/src/stem_gnn_model/output/divvy_10_min_wide_percent/test/test_horizon_3_window_size_6_lr_1.0e-03/"
-base_dir_h6 <- "~/Documents/GitHub/stemGNN_divvy/src/stem_gnn_model/output/divvy_10_min_wide_percent/test/test_horizon_6_window_size_6_lr_1.0e-03/"
+# Local path to Chicago Community Areas shape file
+chicago_ca_path <- paste0(base_dir, "Data/Boundaries-Neighborhoods.geojson")
 
+# Divvy URL for RSocrata
+divvy_stations_url <- "https://data.cityofchicago.org/resource/bk89-9dk7.json"
+
+# Results file names
 abs_error_file_name <- "predict_abs_error.csv"
 actual_file_name <- "target.csv"
   
-abs_error_file_path_h3 <- paste0(base_dir_h3, abs_error_file_name)
-actual_file_path_h3 <- paste0(base_dir_h3, actual_file_name)
-abs_error_file_path_h6 <- paste0(base_dir_h6, abs_error_file_name)
-actual_file_path_h6 <- paste0(base_dir_h6, actual_file_name)
+# Construct results file paths
+abs_error_file_path_h3 <- paste0(base_dir, dir_h3, abs_error_file_name)
+actual_file_path_h3 <- paste0(base_dir_h3, dir_h3, actual_file_name)
+abs_error_file_path_h6 <- paste0(base_dir, dir_h6, abs_error_file_name)
+actual_file_path_h6 <- paste0(base_dir, dir_h6, actual_file_name)
 
-abs_error_h3 <- read_csv(abs_error_file_path_h3, col_names = FALSE)
-actual_h3 <- read_csv(actual_file_path_h3, col_names = FALSE)
-abs_error_h6 <- read_csv(abs_error_file_path_h6, col_names = FALSE)
-actual_h6 <- read_csv(actual_file_path_h6, col_names = FALSE)
+message("Importing data.")
+source("src/write_up/import_write_up.R")
 
-source("src/eval/metrics_eval.R")
+message("Cleaning data.")
+source("src/write_up/cleaning_write_up.R")
+
+message("Generating metrics table.")
+source("src/write_up/metrics_write_up.R")
 

@@ -16,18 +16,6 @@ metrics_df <- data.frame(Metric = c("RMSE", "RMSE", "MASE", "MASE"),
            Horizon = c(3, 6, 3, 6),
            Value = c(rmse_h3_string, rmse_h6_string, mase_h3_round, mase_h6_round))
 
-kable(metrics_df)
 
-
-# Adjust column widths and table width
-kable_styled <- kable(metrics_df, "html", align = c('l', 'c', 'r'), 
-                      col.names = c("Metric", "Horizon", "Value")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), 
-                full_width = TRUE, 
-                position = "center", full_width = F) %>%
-  column_spec(1, width = ".2in") %>%  # Adjust the width of the first column
-  column_spec(2, width = ".5in") %>%  # Adjust the width of the second column
-  column_spec(3, width = ".5in")      # Adjust the width of the third column
-
-# Save the table as a PDF with better spacing
-save_kable(kable_styled, "metrics_table.pdf")
+kable(metrics_df, format = "latex", align = c('l', 'c', 'r')) %>%
+  save_kable("figs/metrics_table.pdf")
