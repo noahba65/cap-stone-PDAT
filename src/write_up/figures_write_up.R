@@ -1,20 +1,9 @@
-# Data cleaning for Figures 1 and 2
-divvy_stations_in_ca <- st_join(target_area, divvy_stations_clean)
-id_filter <- divvy_stations_in_ca$id
-
-
-# Clean divvy data to give only ID's in target area
-divvy_data_ID <- divvy_raw %>%
-  filter( ID %in% id_filter) %>%
-  select(ID)
-target_stations <- divvy_stations_clean %>%
-  filter(id %in% divvy_data_ID$ID)
 
 
 # Generate figure 1
 ggplot() +
-  geom_sf(data = chicago_ca_clean) +
-  geom_sf(data = target_area, fill = "red") +
+  geom_sf(data = chicago_ca_clean, alpha = .7) +
+  geom_sf(data = target_area, fill = "#510C76") +
   ggtitle("Target Community \nAreas") +
   theme(
     panel.grid.major = element_blank(), # Remove major grid lines
@@ -31,7 +20,7 @@ ggsave("figs/target_community_areas.png")
 # Generate Figure 2
 ggplot() +
   geom_sf(data = st_union(target_area)) +
-  geom_sf(data = target_stations, color = "red") +
+  geom_sf(data = target_stations, color = "#510C76") +
   ggtitle("Target Stations") +
   theme(
     panel.grid.major = element_blank(), # Remove major grid lines
@@ -46,5 +35,35 @@ ggplot() +
   )
 
 ggsave("figs/target_stations.png")
+
+
+
+
+mase_df <- data.frame(Node = names(mase_per_node_h6), MASE = as.numeric(mase_per_node_h6)) %>% 
+  arrange(desc(MASE))
+
+# Plot
+ggplot(mase_df, aes(x = reorder(Node, -MASE), y = MASE)) +
+  geom_bar(stat = "identity", fill = "#510C76") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  labs(x = "Node", y = "MASE", title = "MASE per Node Horizon 6")
+
+ggsave("figs/mase_per_node.png")
+
+
+rmse_df <- data.frame(Node = names(rmse_per_node_h6), MASE = as.numeric(rmse_per_node_h6)) %>% 
+  arrange(desc(MASE))
+
+# Plot
+ggplot(rmse_df, aes(x = reorder(Node, -MASE), y = MASE)) +
+  geom_bar(stat = "identity", fill = "#510C76") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  labs(x = "Node", y = "RMSE", title = "RMSE per Node Horizon 6") 
+
+ggsave("figs/rmse_per_node.png")
 
 
