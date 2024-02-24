@@ -27,7 +27,7 @@ actual_file_path_h3 <- paste0(base_dir, dir_h3, actual_file_name)
 abs_error_file_path_h6 <- paste0(base_dir, dir_h6, abs_error_file_name)
 actual_file_path_h6 <- paste0(base_dir, dir_h6, actual_file_name)
 
-target_ca <- c("Uptown", "North Center", "Lincoln Square")
+target_ca <- c("UPTOWN", "NORTH CENTER", "LINCOLN SQUARE")
 
 message("Importing data.")
 source("src/write_up/import_write_up.R")

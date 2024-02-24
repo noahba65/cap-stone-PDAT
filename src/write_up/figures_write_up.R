@@ -15,7 +15,7 @@ target_stations <- divvy_stations_clean %>%
 ggplot() +
   geom_sf(data = chicago_ca_clean) +
   geom_sf(data = target_area, fill = "red") +
-  ggtitle("Target Community Areas") +
+  ggtitle("Target Community \nAreas") +
   theme(
     panel.grid.major = element_blank(), # Remove major grid lines
     panel.grid.minor = element_blank(), # Remove minor grid lines
@@ -25,10 +25,13 @@ ggplot() +
     panel.background = element_rect(fill = "white"), # Set background to white
     plot.title = element_text(face = "bold", size = 20) # Bold and larger title
   )
+
+ggsave("figs/target_community_areas.png")
+
 # Generate Figure 2
 ggplot() +
-  geom_sf(data = st_union(target_area )) +
-  geom_sf(data = target_stations) +
+  geom_sf(data = st_union(target_area)) +
+  geom_sf(data = target_stations, color = "red") +
   ggtitle("Target Stations") +
   theme(
     panel.grid.major = element_blank(), # Remove major grid lines
@@ -37,5 +40,11 @@ ggplot() +
     axis.text.y = element_blank(), # Remove y-axis labels
     axis.ticks = element_blank(), # Remove axis ticks
     panel.background = element_rect(fill = "white"), # Set background to white
-    plot.title = element_text(face = "bold", size = 20) # Bold and larger title
+    plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, size = 1)
   )
+
+ggsave("figs/target_stations.png")
+
+
