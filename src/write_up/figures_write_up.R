@@ -15,7 +15,7 @@ ggplot() +
     plot.title = element_text(face = "bold", size = 20) # Bold and larger title
   )
 
-ggsave("figs/target_community_areas.png")
+ggsave("figs/target_community_areas.png", height = 5, width = 4)
 
 # Generate Figure 2
 ggplot() +
@@ -34,7 +34,7 @@ ggplot() +
     panel.border = element_rect(color = "black", fill = NA, size = 1)
   )
 
-ggsave("figs/target_stations.png")
+ggsave("figs/target_stations.png", height = 8.28, width = 8)
 
 
 
@@ -46,11 +46,13 @@ mase_df <- data.frame(Node = names(mase_per_node_h6), MASE = as.numeric(mase_per
 ggplot(mase_df, aes(x = reorder(Node, -MASE), y = MASE)) +
   geom_bar(stat = "identity", fill = "#510C76") +
   theme_minimal() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) +
+  theme(text = element_text(size = 16),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        plot.background = element_rect(fill = "white", colour = NA)) +
   labs(x = "Node", y = "MASE", title = "MASE per Node Horizon 6")
 
-ggsave("figs/mase_per_node.png")
+ggsave("figs/mase_per_node.png", height = 8.28, width = 18)
 
 
 rmse_df <- data.frame(Node = names(rmse_per_node_h6), MASE = as.numeric(rmse_per_node_h6)) %>% 
@@ -59,11 +61,13 @@ rmse_df <- data.frame(Node = names(rmse_per_node_h6), MASE = as.numeric(rmse_per
 # Plot
 ggplot(rmse_df, aes(x = reorder(Node, -MASE), y = MASE)) +
   geom_bar(stat = "identity", fill = "#510C76") +
-  theme_minimal() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) +
+  theme_light() +
+  theme(text = element_text(size = 16),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        plot.background = element_rect(fill = "white", colour = NA)) +
   labs(x = "Node", y = "RMSE", title = "RMSE per Node Horizon 6") 
 
-ggsave("figs/rmse_per_node.png")
+ggsave("figs/rmse_per_node.png", height = 8.28, width = 18)
 
 
