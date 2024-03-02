@@ -22,4 +22,4 @@ metrics_df <- data.frame(Metric = c("RMSE", "RMSE", "MASE", "MASE"),
 
 
 kable(metrics_df, format = "latex", align = c('l', 'c', 'r')) %>%
-  save_kable("figs/metrics_table.pdf")
+  save_kable("figs/metrics_table.png")
